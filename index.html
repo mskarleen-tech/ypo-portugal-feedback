@@ -4,43 +4,51 @@
 </head><body>
 <title>Portugal Network Feedback</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Figtree:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@200;300;400;500;600;700&display=swap">
+<link rel="icon" href="assets/ypo-mark-navy.png">
 <style>
-/* Layout: one narrow phone-first column; azulejo-blue header band, room chips, network list, then the form or the feedback record. */
+/* Layout: YPO Networks key-visual band (navy, blue light streak, triangle grid, cut corner) over a phone-first column: room chips, network list, form or one-pager board. */
 :root{
-  --bg:#f7f8fb; --surface:#ffffff; --ink:#18213a; --muted:#5b6582; --line:#dfe3ee;
-  --azul:#1f4fa8; --azul-soft:#e7eefb; --azul-ink:#ffffff; --sun:#c98a12;
-  --q:#1f4fa8; --c:#2f7d5b; --r:#8a5a12; --o:#9a3f74;
-  --display:"Fraunces", Georgia, "Times New Roman", serif;
-  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --radius:12px;
+  --navy:#041e41; --blue:#2043e5; --yellow:#ffc837;
+  --bg:#f9f9f9; --surface:#ffffff; --ink:#041e41; --muted:#4d5b78; --line:#dbe2f0;
+  --azul:#2043e5; --azul-soft:#e3eafc; --azul-ink:#ffffff; --sun:#2043e5;
+  --q:#2043e5; --c:#1f7a55; --r:#8a5a00; --o:#8b3a8f;
+  --display:"Helvetica Neue", "Inter Tight", Helvetica, Arial, sans-serif;
+  --body:"Helvetica Neue", "Inter Tight", Helvetica, Arial, sans-serif;
+  --radius:4px;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0f1424; --surface:#171e33; --ink:#e8ecf7; --muted:#9ea8c4; --line:#2a3452;
-  --azul:#7ea5f0; --azul-soft:#1d2a4c; --azul-ink:#0f1424; --sun:#e5b04a;
-  --q:#8db1f5; --c:#6fcf9f; --r:#e2b468; --o:#e59ac8; color-scheme:dark}}
+  --bg:#031631; --surface:#0a2550; --ink:#eef2fb; --muted:#a9b7d6; --line:#1d3b6f;
+  --azul:#7da1ef; --azul-soft:#10306a; --azul-ink:#041e41; --sun:#ffc837;
+  --q:#9db8f5; --c:#6fcf9f; --r:#ffc837; --o:#e3a3e6; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0f1424; --surface:#171e33; --ink:#e8ecf7; --muted:#9ea8c4; --line:#2a3452;
-  --azul:#7ea5f0; --azul-soft:#1d2a4c; --azul-ink:#0f1424; --sun:#e5b04a;
-  --q:#8db1f5; --c:#6fcf9f; --r:#e2b468; --o:#e59ac8; color-scheme:dark}
+  --bg:#031631; --surface:#0a2550; --ink:#eef2fb; --muted:#a9b7d6; --line:#1d3b6f;
+  --azul:#7da1ef; --azul-soft:#10306a; --azul-ink:#041e41; --sun:#ffc837;
+  --q:#9db8f5; --c:#6fcf9f; --r:#ffc837; --o:#e3a3e6; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
 .wrap{max-width:960px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
-header.band{background:var(--azul);color:var(--azul-ink);position:relative;overflow:hidden}
-header.band .wrap{padding-block:28px 22px;position:relative;z-index:1}
-.tiles{position:absolute;inset:0;opacity:.13;background-image:
-  radial-gradient(circle at 50% 50%, transparent 9px, currentColor 10px, currentColor 11px, transparent 12px),
-  linear-gradient(45deg, transparent 46%, currentColor 47%, currentColor 53%, transparent 54%),
-  linear-gradient(-45deg, transparent 46%, currentColor 47%, currentColor 53%, transparent 54%);
-  background-size:44px 44px;pointer-events:none}
-.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;opacity:.85;margin:0}
-h1{font-family:var(--display);font-weight:650;font-size:clamp(28px,6vw,40px);line-height:1.1;margin:6px 0 6px;text-wrap:balance}
-.sub{margin:0;opacity:.9;max-width:52ch}
-nav.tabs{display:flex;gap:6px;margin-top:18px}
-nav.tabs button{font:600 15px var(--body);border:1px solid color-mix(in srgb,var(--azul-ink) 45%,transparent);background:transparent;color:var(--azul-ink);padding:8px 14px;border-radius:999px;cursor:pointer}
-nav.tabs button[aria-selected="true"]{background:var(--azul-ink);color:var(--azul)}
-h2{font-family:var(--display);font-weight:500;font-size:22px;margin:28px 0 10px;text-wrap:balance}
-.step{font:600 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:24px 0 8px}
+header.band{color:#ffffff;position:relative;overflow:hidden;background:#041e41;padding-block:0 0}
+header.band::before{content:"";position:absolute;inset:0;background:
+  linear-gradient(118deg, rgba(4,30,65,0) 0%, rgba(4,30,65,0) 38%, rgba(125,161,239,.75) 52%, rgba(32,67,229,0) 66%),
+  radial-gradient(120% 140% at 85% 30%, #2043e5 0%, #113596 45%, #062456 80%);}
+header.band::after{content:"";position:absolute;inset:0;opacity:.16;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='69.28'%3E%3Cpath d='M0 0L40 69.28M40 0L0 69.28M0 34.64H40M0 0H40' stroke='%23ffffff' stroke-width='.6' fill='none'/%3E%3C/svg%3E");background-size:40px 69.28px}
+header.band .wrap{padding-block:20px 30px;position:relative;z-index:1}
+.cut{position:absolute;right:0;bottom:0;width:120px;height:92px;z-index:1;background:var(--bg);clip-path:polygon(100% 0,100% 100%,0 100%)}
+.cut img{position:absolute;right:16px;bottom:12px;width:44px;height:auto}
+.mark-dark{display:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .mark-dark{display:block}:root:not([data-theme="light"]) .mark-light{display:none}}
+:root[data-theme="dark"] .mark-dark{display:block}:root[data-theme="dark"] .mark-light{display:none}
+.logo{display:block;height:40px;width:auto;margin-bottom:22px}
+.eyebrow{display:flex;align-items:center;gap:10px;font:700 12px var(--body);letter-spacing:.1em;text-transform:uppercase;margin:0}
+.eyebrow::before{content:"";width:18px;height:18px;background:#ffc837;flex:none}
+h1{font-family:var(--display);font-weight:200;font-size:clamp(36px,8vw,64px);line-height:1.02;letter-spacing:-.01em;margin:14px 0 14px;text-wrap:balance}
+.sub{margin:0;font-weight:600;font-size:17px;max-width:46ch}
+nav.tabs{display:flex;gap:8px;margin-top:22px;flex-wrap:wrap}
+nav.tabs button{font:600 15px var(--body);border:1px solid rgba(255,255,255,.55);background:rgba(4,30,65,.35);color:#ffffff;padding:9px 16px;border-radius:2px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:#ffffff;color:#041e41;border-color:#ffffff}
+h2{font-family:var(--display);font-weight:300;font-size:22px;margin:28px 0 10px;text-wrap:balance}
+.step{font:700 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink);margin:24px 0 8px}
 .rooms{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .rooms button{font:600 15px var(--body);padding:12px 6px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
 .rooms button[aria-pressed="true"]{background:var(--azul);color:var(--azul-ink);border-color:var(--azul)}
@@ -54,10 +62,10 @@ h2{font-family:var(--display);font-weight:500;font-size:22px;margin:28px 0 10px;
 .net .who{display:block;font-weight:400;font-size:13px;color:var(--muted)}
 .net .count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 form{display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-top:10px}
-.for{font-family:var(--display);font-size:20px;margin:0}
+.for{font-family:var(--display);font-weight:300;font-size:22px;margin:0}
 .choice{display:flex;flex-wrap:wrap;gap:6px}
 .choice input{position:absolute;opacity:0;pointer-events:none}
-.choice label{font:500 14px var(--body);padding:7px 12px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:var(--bg)}
+.choice label{font:500 14px var(--body);padding:7px 12px;border-radius:2px;border:1px solid var(--line);cursor:pointer;background:var(--bg)}
 .choice input:checked + label{background:var(--azul);color:var(--azul-ink);border-color:var(--azul)}
 .choice input:focus-visible + label{outline:2px solid var(--sun);outline-offset:2px}
 .field-label{font-weight:600;font-size:14px;display:block;margin-bottom:6px}
@@ -65,7 +73,7 @@ form{display:flex;flex-direction:column;gap:14px;background:var(--surface);borde
 textarea,input[type=text],select{width:100%;font:16px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 textarea{min-height:120px;resize:vertical}
 textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid var(--sun);outline-offset:1px}
-.primary{font:700 16px var(--body);background:var(--azul);color:var(--azul-ink);border:0;border-radius:10px;padding:13px 18px;cursor:pointer}
+.primary{font:700 16px var(--body);background:var(--azul);color:var(--azul-ink);border:0;border-radius:var(--radius);padding:13px 18px;cursor:pointer}
 .primary:disabled{opacity:.5;cursor:not-allowed}
 .ghost{font:600 14px var(--body);background:transparent;color:var(--azul);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;max-width:calc(100% - 32px)}
@@ -86,27 +94,36 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
 .eyebrow-ink{font:600 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--azul);margin:0}
 .board{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:6px}
 .col{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;min-width:0;display:flex;flex-direction:column;gap:8px}
-.col h3{font-family:var(--display);font-weight:500;font-size:19px;margin:0;display:flex;justify-content:space-between;align-items:baseline}
+.col h3{font-family:var(--display);font-weight:400;font-size:19px;margin:0;display:flex;justify-content:space-between;align-items:baseline}
 .col h3 .n{font:600 13px var(--body);color:var(--muted);font-variant-numeric:tabular-nums}
 .col .prompt{margin:-6px 0 2px;font-size:13px;color:var(--muted)}
 .col .none{margin:0;font-size:14px;color:var(--muted)}
 .col .entry{background:var(--bg);padding:10px 12px;border-radius:10px}
+.mainroom{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;margin-top:8px;font:600 15px var(--body);padding:12px 14px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-align:left}
+.mainroom span{font-weight:400;font-size:13px;color:var(--muted)}
+.mainroom[aria-pressed="true"]{background:var(--navy);color:#ffffff;border-color:var(--navy)}
+.mainroom[aria-pressed="true"] span{color:#c9d6f5}
+.ai{margin-top:32px;border-top:1px solid var(--line);padding-top:4px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.ai .panel-note{margin:0}
+.ai-out{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--yellow);border-radius:var(--radius);padding:14px 16px;width:100%;white-space:pre-wrap}
+.ai-out p{margin:0 0 10px}.ai-meta{font-size:13px;color:var(--muted)}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
 @media (max-width:420px){.rooms{grid-template-columns:repeat(2,1fr)}}
 @media (prefers-reduced-motion:no-preference){.net,.rooms button,.choice label{transition:background .15s,border-color .15s}}
 </style>
 
 <header class="band">
-  <div class="tiles" aria-hidden="true"></div>
   <div class="wrap">
-    <p class="eyebrow">YPO Networks · Portugal Retreat · January 2027</p>
-    <h1>Portugal Network Feedback</h1>
+    <img class="logo" src="assets/ypo-networks-white.png" alt="YPO Networks" width="168" height="40">
+    <p class="eyebrow">Portugal Retreat · January 2027</p>
+    <h1>Network Strategy Feedback</h1>
     <p class="sub">Leave a question, comment or remark for any network pitch. Everything is kept so network directors and NEMs can come back to it through FY27–28.</p>
     <nav class="tabs" role="tablist">
       <button role="tab" id="tab-give" aria-selected="true">Give feedback</button>
       <button role="tab" id="tab-read" aria-selected="false">Read feedback</button>
     </nav>
   </div>
+  <div class="cut" aria-hidden="true"><img src="assets/ypo-mark-navy.png" alt="" class="mark-light"><img src="assets/ypo-mark-white.png" alt="" class="mark-dark"></div>
 </header>
 
 <main class="wrap">
@@ -115,6 +132,7 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
   <section id="view-give">
     <p class="step">Which room are you in?</p>
     <div class="rooms" id="rooms"></div>
+    <button type="button" class="mainroom" id="mainroom">Main Room <span>Strategic synthesis: remarks on the whole experience</span></button>
     <p class="panel-note" id="panel-note"></p>
 
     <p class="step" id="net-step" hidden>Which network are you giving feedback to?</p>
@@ -126,7 +144,7 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
         <span class="field-label">What kind of feedback?</span>
         <div class="choice" id="kinds"></div>
       </div>
-      <div>
+      <div id="parts-wrap">
         <span class="field-label">Which part of the pitch? <span class="hint">(optional)</span></span>
         <div class="choice" id="parts"></div>
       </div>
@@ -146,6 +164,13 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
     <p class="step">Choose a network</p>
     <select id="read-net" aria-label="Network"></select>
     <div id="read-out"></div>
+    <section class="ai" id="ai">
+      <p class="step">AI summary</p>
+      <p class="panel-note">Get a short summary of the main themes, strengths, challenges and asks. Choose what to summarise:</p>
+      <div class="choice" id="ai-scopes"></div>
+      <button type="button" class="primary" id="ai-go">Summarise</button>
+      <div id="ai-out" class="ai-out" hidden></div>
+    </section>
   </section>
 </main>
 <div class="toast" id="toast" role="status" hidden></div>
@@ -192,6 +217,7 @@ const ROOMS = [
 ];
 const NETS = {};
 ROOMS.forEach(r => r.nets.forEach(([time,id,name,nd,nem]) => NETS[id] = {time,id,name,nd,nem,room:r.n}));
+NETS.main = {time:"1:00", id:"main", name:"Main Room: the whole experience", nd:"", nem:"", room:0, main:true};
 const KINDS = [["question","Question"],["comment","Comment"],["remark","Remark"],["offer","Offer to help"]];
 const PARTS = [["focus","Focus"],["win","Win"],["challenge","Challenge"],["ask","Ask"]];
 
@@ -214,13 +240,15 @@ function countFor(id){ return state.entries.filter(e => e.network === id).length
 function renderRooms(){
   const box = $("rooms"); box.replaceChildren();
   ROOMS.forEach(r => box.append(el("button", {type:"button","aria-pressed": String(state.room === r.n), onclick(){ state.room = r.n; state.net = null; renderGive(); }}, "Room " + r.n)));
+  $("mainroom").setAttribute("aria-pressed", String(state.room === "main"));
+  if (state.room === "main"){ $("panel-note").textContent = "Panelists share key points from each room, then common themes and next steps."; $("net-step").hidden = true; return; }
   const r = ROOMS[state.room-1];
   $("panel-note").textContent = r ? "Panelists: " + r.panel + " · Strategy Pod: " + r.pod : "Tap your room to see the networks presenting there.";
   $("net-step").hidden = !r;
 }
 function renderNets(){
   const list = $("nets"); list.replaceChildren();
-  if (!state.room) return;
+  if (!state.room || state.room === "main") return;
   ROOMS[state.room-1].nets.forEach(([time,id,name,nd,nem]) => {
     const c = countFor(id);
     list.append(el("li", {}, el("button", {type:"button", class:"net", "aria-pressed": String(state.net === id), onclick(){ state.net = id; renderGive(); $("form").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"}); }},
@@ -240,7 +268,10 @@ function renderForm(){
   const f = $("form");
   if (!state.net){ f.hidden = true; return; }
   f.hidden = false;
-  $("form-for").textContent = "Feedback for " + NETS[state.net].name;
+  const isMain = !!NETS[state.net].main;
+  $("form-for").textContent = isMain ? "Main Room: what would you like to say about the whole experience?" : "Feedback for " + NETS[state.net].name;
+  $("parts-wrap").hidden = isMain;
+  $("text").placeholder = isMain ? "Themes you noticed across rooms, what worked, what to do differently next time…" : "Be specific and honest. What would help this network move forward?";
   $("send").disabled = !ready || !canWrite;
 }
 function renderGive(){ renderRooms(); renderNets(); renderForm(); }
@@ -254,6 +285,7 @@ function renderReadSelect(){
     r.nets.forEach(([,id,name]) => g.append(el("option", {value:id}, name)));
     s.append(g);
   });
+  const gm = el("optgroup", {label:"Main Room"}); gm.append(el("option", {value:"main"}, "Main Room: the whole experience")); s.append(gm);
   s.addEventListener("change", () => { state.readNet = s.value || null; state.readKind = null; renderRead(); });
 }
 function fmt(ts){ try { return new Date(ts).toLocaleString(undefined, {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}); } catch { return ""; } }
@@ -277,7 +309,7 @@ function renderRead(){
   const head = el("div", {class:"op-head"},
     el("p", {class:"eyebrow-ink"}, "Feedback one-pager · Portugal Retreat, January 2027"),
     el("h2", {}, net.name),
-    el("p", {class:"panel-note"}, "ND " + net.nd + " · NEM " + net.nem + " · Room " + net.room + " at " + net.time));
+    el("p", {class:"panel-note"}, net.main ? "Remarks on the whole retreat session, left in the Main Room synthesis" : "ND " + net.nd + " · NEM " + net.nem + " · Room " + net.room + " at " + net.time));
   const sum = el("div", {class:"summary"});
   sum.append(el("button", {type:"button", class:"pill", "aria-pressed": String(!state.readKind), onclick(){ state.readKind = null; renderRead(); }}, "All " + all.length));
   KINDS.forEach(([k,label]) => {
@@ -313,12 +345,12 @@ function onePagerHtml(net, rows){
   }).join("");
   const counts = KINDS.map(([k,l]) => [l, rows.filter(e => e.kind === k).length]).filter(x => x[1]).map(x => x[0] + ": " + x[1]).join(" · ");
   return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(net.name) + ' feedback</title><style>' +
-    'body{font-family:Georgia,serif;color:#18213a;max-width:900px;margin:0 auto;padding:32px 20px}header{border-bottom:3px solid #1f4fa8;padding-bottom:12px;margin-bottom:20px}' +
-    '.k{font:600 12px Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#1f4fa8}h1{margin:6px 0}.m{font:14px Arial,sans-serif;color:#5b6582}' +
+    'body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#041e41;max-width:900px;margin:0 auto;padding:32px 20px}header{border-bottom:3px solid #2043e5;padding-bottom:12px;margin-bottom:20px}' +
+    '.k{font:600 12px Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#2043e5}h1{margin:10px 0 6px;font-weight:200;font-size:40px}img.l{height:32px;display:block;margin-bottom:16px}.m{font:14px Arial,sans-serif;color:#5b6582}' +
     'main{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}section{border:1px solid #dfe3ee;border-radius:10px;padding:14px;break-inside:avoid}' +
     'h2{font-size:18px;margin:0}small{color:#5b6582;font-weight:400}.q{font:13px Arial,sans-serif;color:#5b6582;margin:2px 0 10px}.e{border-top:1px solid #dfe3ee;padding:8px 0}' +
-    '.e b{font:700 11px Arial,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#1f4fa8}.e p{margin:4px 0;white-space:pre-wrap}.e i{font:12px Arial,sans-serif;color:#5b6582}' +
-    '</style></head><body><header><div class="k">YPO Networks · Portugal Retreat · January 2027</div><h1>' + esc(net.name) + '</h1><div class="m">ND ' + esc(net.nd) + ' · NEM ' + esc(net.nem) + ' · ' + rows.length + ' pieces of feedback (' + counts + ')</div></header><main>' + sec + '</main></body></html>';
+    '.e b{font:700 11px Arial,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#2043e5}.e p{margin:4px 0;white-space:pre-wrap}.e i{font:12px Arial,sans-serif;color:#5b6582}' +
+    '</style></head><body><header>' + (store.mode === "web" ? '<img class="l" src="' + location.origin + '/assets/ypo-networks-navy.png" alt="YPO Networks">' : '') + '<div class="k">YPO Networks · Portugal Retreat · January 2027</div><h1>' + esc(net.name) + '</h1><div class="m">ND ' + esc(net.nd) + ' · NEM ' + esc(net.nem) + ' · ' + rows.length + ' pieces of feedback (' + counts + ')</div></header><main>' + sec + '</main></body></html>';
 }
 async function downloadOnePager(net, rows){
   const html = onePagerHtml(net, rows), filename = net.id.toUpperCase() + "-Portugal-feedback.html";
@@ -343,6 +375,22 @@ function showTab(which){
   $("view-give").hidden = !give; $("view-read").hidden = give;
   if (give) renderGive(); else renderRead();
 }
+$("mainroom").onclick = () => { state.room = "main"; state.net = "main"; renderGive(); $("form").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"}); };
+const AI_SCOPES = [["room-1","Room 1"],["room-2","Room 2"],["room-3","Room 3"],["room-4","Room 4"],["main","Main Room"],["all","Whole retreat"]];
+renderChoices($("ai-scopes"), AI_SCOPES, "aiscope", true);
+$("ai-go").onclick = async () => {
+  const scope = (document.querySelector('input[name="aiscope"]:checked') || {}).value || "all";
+  const out = $("ai-out"); out.hidden = false; out.textContent = "Reading the feedback and writing the summary…"; $("ai-go").disabled = true;
+  try {
+    if (store.mode !== "web") throw {msg: "AI summaries work on the live site."};
+    const r = await fetch("/api/summary", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({scope, names: Object.fromEntries(Object.values(NETS).map(n => [n.id, n.name]))})});
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw {msg: j.error || "The summary couldn't be created. Try again in a minute."};
+    out.replaceChildren(el("p", {class:"ai-meta"}, j.title + " · based on " + j.count + (j.count === 1 ? " note" : " notes") + (j.cached ? " · saved summary" : "")),
+      ...j.summary.split(/\n{2,}/).map(par => el("p", {}, par.trim())));
+  } catch (e) { out.textContent = (e && e.msg) || "The summary couldn't be created. Try again in a minute."; }
+  finally { $("ai-go").disabled = false; }
+};
 $("tab-give").onclick = () => showTab("give");
 $("tab-read").onclick = () => showTab("read");
 
@@ -379,7 +427,7 @@ $("form").addEventListener("submit", async ev => {
   if (!text){ $("text").focus(); toast("Write your feedback first"); return; }
   if (!ready) return;
   const kind = (document.querySelector('input[name="kind"]:checked') || {}).value || "comment";
-  const part = (document.querySelector('input[name="part"]:checked') || {}).value || null;
+  const part = NETS[state.net].main ? null : (document.querySelector('input[name="part"]:checked') || {}).value || null;
   const net = NETS[state.net];
   $("send").disabled = true;
   try {
