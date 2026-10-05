@@ -73,7 +73,7 @@ form{display:flex;flex-direction:column;gap:14px;background:var(--surface);borde
 textarea,input[type=text],select{width:100%;font:16px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 textarea{min-height:120px;resize:vertical}
 textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid var(--sun);outline-offset:1px}
-.primary{font:700 16px var(--body);background:var(--azul);color:var(--azul-ink);border:0;border-radius:10px;padding:13px 18px;cursor:pointer}
+.primary{font:700 16px var(--body);background:var(--azul);color:var(--azul-ink);border:0;border-radius:var(--radius);padding:13px 18px;cursor:pointer}
 .primary:disabled{opacity:.5;cursor:not-allowed}
 .ghost{font:600 14px var(--body);background:transparent;color:var(--azul);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;max-width:calc(100% - 32px)}
@@ -99,6 +99,14 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
 .col .prompt{margin:-6px 0 2px;font-size:13px;color:var(--muted)}
 .col .none{margin:0;font-size:14px;color:var(--muted)}
 .col .entry{background:var(--bg);padding:10px 12px;border-radius:10px}
+.mainroom{display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;margin-top:8px;font:600 15px var(--body);padding:12px 14px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;text-align:left}
+.mainroom span{font-weight:400;font-size:13px;color:var(--muted)}
+.mainroom[aria-pressed="true"]{background:var(--navy);color:#ffffff;border-color:var(--navy)}
+.mainroom[aria-pressed="true"] span{color:#c9d6f5}
+.ai{margin-top:32px;border-top:1px solid var(--line);padding-top:4px;display:flex;flex-direction:column;gap:12px;align-items:flex-start}
+.ai .panel-note{margin:0}
+.ai-out{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--yellow);border-radius:var(--radius);padding:14px 16px;width:100%;white-space:pre-wrap}
+.ai-out p{margin:0 0 10px}.ai-meta{font-size:13px;color:var(--muted)}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
 @media (max-width:420px){.rooms{grid-template-columns:repeat(2,1fr)}}
 @media (prefers-reduced-motion:no-preference){.net,.rooms button,.choice label{transition:background .15s,border-color .15s}}
@@ -124,6 +132,7 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
   <section id="view-give">
     <p class="step">Which room are you in?</p>
     <div class="rooms" id="rooms"></div>
+    <button type="button" class="mainroom" id="mainroom">Main Room <span>Strategic synthesis: remarks on the whole experience</span></button>
     <p class="panel-note" id="panel-note"></p>
 
     <p class="step" id="net-step" hidden>Which network are you giving feedback to?</p>
@@ -135,7 +144,7 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
         <span class="field-label">What kind of feedback?</span>
         <div class="choice" id="kinds"></div>
       </div>
-      <div>
+      <div id="parts-wrap">
         <span class="field-label">Which part of the pitch? <span class="hint">(optional)</span></span>
         <div class="choice" id="parts"></div>
       </div>
@@ -155,6 +164,13 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
     <p class="step">Choose a network</p>
     <select id="read-net" aria-label="Network"></select>
     <div id="read-out"></div>
+    <section class="ai" id="ai">
+      <p class="step">AI summary</p>
+      <p class="panel-note">Get a short summary of the main themes, strengths, challenges and asks. Choose what to summarise:</p>
+      <div class="choice" id="ai-scopes"></div>
+      <button type="button" class="primary" id="ai-go">Summarise</button>
+      <div id="ai-out" class="ai-out" hidden></div>
+    </section>
   </section>
 </main>
 <div class="toast" id="toast" role="status" hidden></div>
@@ -201,6 +217,7 @@ const ROOMS = [
 ];
 const NETS = {};
 ROOMS.forEach(r => r.nets.forEach(([time,id,name,nd,nem]) => NETS[id] = {time,id,name,nd,nem,room:r.n}));
+NETS.main = {time:"1:00", id:"main", name:"Main Room: the whole experience", nd:"", nem:"", room:0, main:true};
 const KINDS = [["question","Question"],["comment","Comment"],["remark","Remark"],["offer","Offer to help"]];
 const PARTS = [["focus","Focus"],["win","Win"],["challenge","Challenge"],["ask","Ask"]];
 
@@ -223,13 +240,15 @@ function countFor(id){ return state.entries.filter(e => e.network === id).length
 function renderRooms(){
   const box = $("rooms"); box.replaceChildren();
   ROOMS.forEach(r => box.append(el("button", {type:"button","aria-pressed": String(state.room === r.n), onclick(){ state.room = r.n; state.net = null; renderGive(); }}, "Room " + r.n)));
+  $("mainroom").setAttribute("aria-pressed", String(state.room === "main"));
+  if (state.room === "main"){ $("panel-note").textContent = "Panelists share key points from each room, then common themes and next steps."; $("net-step").hidden = true; return; }
   const r = ROOMS[state.room-1];
   $("panel-note").textContent = r ? "Panelists: " + r.panel + " · Strategy Pod: " + r.pod : "Tap your room to see the networks presenting there.";
   $("net-step").hidden = !r;
 }
 function renderNets(){
   const list = $("nets"); list.replaceChildren();
-  if (!state.room) return;
+  if (!state.room || state.room === "main") return;
   ROOMS[state.room-1].nets.forEach(([time,id,name,nd,nem]) => {
     const c = countFor(id);
     list.append(el("li", {}, el("button", {type:"button", class:"net", "aria-pressed": String(state.net === id), onclick(){ state.net = id; renderGive(); $("form").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"}); }},
@@ -249,7 +268,10 @@ function renderForm(){
   const f = $("form");
   if (!state.net){ f.hidden = true; return; }
   f.hidden = false;
-  $("form-for").textContent = "Feedback for " + NETS[state.net].name;
+  const isMain = !!NETS[state.net].main;
+  $("form-for").textContent = isMain ? "Main Room: what would you like to say about the whole experience?" : "Feedback for " + NETS[state.net].name;
+  $("parts-wrap").hidden = isMain;
+  $("text").placeholder = isMain ? "Themes you noticed across rooms, what worked, what to do differently next time…" : "Be specific and honest. What would help this network move forward?";
   $("send").disabled = !ready || !canWrite;
 }
 function renderGive(){ renderRooms(); renderNets(); renderForm(); }
@@ -263,6 +285,7 @@ function renderReadSelect(){
     r.nets.forEach(([,id,name]) => g.append(el("option", {value:id}, name)));
     s.append(g);
   });
+  const gm = el("optgroup", {label:"Main Room"}); gm.append(el("option", {value:"main"}, "Main Room: the whole experience")); s.append(gm);
   s.addEventListener("change", () => { state.readNet = s.value || null; state.readKind = null; renderRead(); });
 }
 function fmt(ts){ try { return new Date(ts).toLocaleString(undefined, {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}); } catch { return ""; } }
@@ -286,7 +309,7 @@ function renderRead(){
   const head = el("div", {class:"op-head"},
     el("p", {class:"eyebrow-ink"}, "Feedback one-pager · Portugal Retreat, January 2027"),
     el("h2", {}, net.name),
-    el("p", {class:"panel-note"}, "ND " + net.nd + " · NEM " + net.nem + " · Room " + net.room + " at " + net.time));
+    el("p", {class:"panel-note"}, net.main ? "Remarks on the whole retreat session, left in the Main Room synthesis" : "ND " + net.nd + " · NEM " + net.nem + " · Room " + net.room + " at " + net.time));
   const sum = el("div", {class:"summary"});
   sum.append(el("button", {type:"button", class:"pill", "aria-pressed": String(!state.readKind), onclick(){ state.readKind = null; renderRead(); }}, "All " + all.length));
   KINDS.forEach(([k,label]) => {
@@ -352,6 +375,22 @@ function showTab(which){
   $("view-give").hidden = !give; $("view-read").hidden = give;
   if (give) renderGive(); else renderRead();
 }
+$("mainroom").onclick = () => { state.room = "main"; state.net = "main"; renderGive(); $("form").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"}); };
+const AI_SCOPES = [["room-1","Room 1"],["room-2","Room 2"],["room-3","Room 3"],["room-4","Room 4"],["main","Main Room"],["all","Whole retreat"]];
+renderChoices($("ai-scopes"), AI_SCOPES, "aiscope", true);
+$("ai-go").onclick = async () => {
+  const scope = (document.querySelector('input[name="aiscope"]:checked') || {}).value || "all";
+  const out = $("ai-out"); out.hidden = false; out.textContent = "Reading the feedback and writing the summary…"; $("ai-go").disabled = true;
+  try {
+    if (store.mode !== "web") throw {msg: "AI summaries work on the live site."};
+    const r = await fetch("/api/summary", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify({scope, names: Object.fromEntries(Object.values(NETS).map(n => [n.id, n.name]))})});
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw {msg: j.error || "The summary couldn't be created. Try again in a minute."};
+    out.replaceChildren(el("p", {class:"ai-meta"}, j.title + " · based on " + j.count + (j.count === 1 ? " note" : " notes") + (j.cached ? " · saved summary" : "")),
+      ...j.summary.split(/\n{2,}/).map(par => el("p", {}, par.trim())));
+  } catch (e) { out.textContent = (e && e.msg) || "The summary couldn't be created. Try again in a minute."; }
+  finally { $("ai-go").disabled = false; }
+};
 $("tab-give").onclick = () => showTab("give");
 $("tab-read").onclick = () => showTab("read");
 
@@ -388,7 +427,7 @@ $("form").addEventListener("submit", async ev => {
   if (!text){ $("text").focus(); toast("Write your feedback first"); return; }
   if (!ready) return;
   const kind = (document.querySelector('input[name="kind"]:checked') || {}).value || "comment";
-  const part = (document.querySelector('input[name="part"]:checked') || {}).value || null;
+  const part = NETS[state.net].main ? null : (document.querySelector('input[name="part"]:checked') || {}).value || null;
   const net = NETS[state.net];
   $("send").disabled = true;
   try {
