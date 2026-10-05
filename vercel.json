@@ -1,5 +1,0 @@
-{
-  "functions": {
-    "api/summary.js": { "maxDuration": 60 }
-  }
-}
