@@ -1,0 +1,420 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;padding-block:env(safe-area-inset-top,0px) env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head><body>
+<title>Portugal Network Feedback</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one narrow phone-first column; azulejo-blue header band, room chips, network list, then the form or the feedback record. */
+:root{
+  --bg:#f7f8fb; --surface:#ffffff; --ink:#18213a; --muted:#5b6582; --line:#dfe3ee;
+  --azul:#1f4fa8; --azul-soft:#e7eefb; --azul-ink:#ffffff; --sun:#c98a12;
+  --q:#1f4fa8; --c:#2f7d5b; --r:#8a5a12; --o:#9a3f74;
+  --display:"Fraunces", Georgia, "Times New Roman", serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1424; --surface:#171e33; --ink:#e8ecf7; --muted:#9ea8c4; --line:#2a3452;
+  --azul:#7ea5f0; --azul-soft:#1d2a4c; --azul-ink:#0f1424; --sun:#e5b04a;
+  --q:#8db1f5; --c:#6fcf9f; --r:#e2b468; --o:#e59ac8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1424; --surface:#171e33; --ink:#e8ecf7; --muted:#9ea8c4; --line:#2a3452;
+  --azul:#7ea5f0; --azul-soft:#1d2a4c; --azul-ink:#0f1424; --sun:#e5b04a;
+  --q:#8db1f5; --c:#6fcf9f; --r:#e2b468; --o:#e59ac8; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:960px;margin:0 auto;padding-inline:16px;padding-block:0 48px}
+header.band{background:var(--azul);color:var(--azul-ink);position:relative;overflow:hidden}
+header.band .wrap{padding-block:28px 22px;position:relative;z-index:1}
+.tiles{position:absolute;inset:0;opacity:.13;background-image:
+  radial-gradient(circle at 50% 50%, transparent 9px, currentColor 10px, currentColor 11px, transparent 12px),
+  linear-gradient(45deg, transparent 46%, currentColor 47%, currentColor 53%, transparent 54%),
+  linear-gradient(-45deg, transparent 46%, currentColor 47%, currentColor 53%, transparent 54%);
+  background-size:44px 44px;pointer-events:none}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;opacity:.85;margin:0}
+h1{font-family:var(--display);font-weight:650;font-size:clamp(28px,6vw,40px);line-height:1.1;margin:6px 0 6px;text-wrap:balance}
+.sub{margin:0;opacity:.9;max-width:52ch}
+nav.tabs{display:flex;gap:6px;margin-top:18px}
+nav.tabs button{font:600 15px var(--body);border:1px solid color-mix(in srgb,var(--azul-ink) 45%,transparent);background:transparent;color:var(--azul-ink);padding:8px 14px;border-radius:999px;cursor:pointer}
+nav.tabs button[aria-selected="true"]{background:var(--azul-ink);color:var(--azul)}
+h2{font-family:var(--display);font-weight:500;font-size:22px;margin:28px 0 10px;text-wrap:balance}
+.step{font:600 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:24px 0 8px}
+.rooms{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.rooms button{font:600 15px var(--body);padding:12px 6px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.rooms button[aria-pressed="true"]{background:var(--azul);color:var(--azul-ink);border-color:var(--azul)}
+.panel-note{font-size:14px;color:var(--muted);margin:8px 0 0}
+.nets{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
+.net{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;padding:12px 14px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);cursor:pointer}
+.net:hover{border-color:var(--azul)}
+.net[aria-pressed="true"]{border-color:var(--azul);box-shadow:inset 0 0 0 1px var(--azul);background:var(--azul-soft)}
+.net .time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);min-width:44px}
+.net .name{font-weight:600;min-width:0}
+.net .who{display:block;font-weight:400;font-size:13px;color:var(--muted)}
+.net .count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+form{display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-top:10px}
+.for{font-family:var(--display);font-size:20px;margin:0}
+.choice{display:flex;flex-wrap:wrap;gap:6px}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.choice label{font:500 14px var(--body);padding:7px 12px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:var(--bg)}
+.choice input:checked + label{background:var(--azul);color:var(--azul-ink);border-color:var(--azul)}
+.choice input:focus-visible + label{outline:2px solid var(--sun);outline-offset:2px}
+.field-label{font-weight:600;font-size:14px;display:block;margin-bottom:6px}
+.hint{font-weight:400;color:var(--muted)}
+textarea,input[type=text],select{width:100%;font:16px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+textarea{min-height:120px;resize:vertical}
+textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid var(--sun);outline-offset:1px}
+.primary{font:700 16px var(--body);background:var(--azul);color:var(--azul-ink);border:0;border-radius:10px;padding:13px 18px;cursor:pointer}
+.primary:disabled{opacity:.5;cursor:not-allowed}
+.ghost{font:600 14px var(--body);background:transparent;color:var(--azul);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:10px;font-weight:600;max-width:calc(100% - 32px)}
+.banner{border:1px solid var(--line);background:var(--surface);border-radius:var(--radius);padding:12px 14px;font-size:14px;color:var(--muted);margin-top:16px}
+.summary{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 14px}
+.pill{font:600 13px var(--body);padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;color:var(--ink)}
+.pill[aria-pressed="true"]{border-color:var(--ink)}
+.tag{display:inline-block;font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
+.k-question{color:var(--q)} .k-comment{color:var(--c)} .k-remark{color:var(--r)} .k-offer{color:var(--o)}
+.entries{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+.entry{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.entry .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:6px}
+.entry p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.empty{color:var(--muted);background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius);padding:18px;text-align:center}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.op-head{margin-top:22px;border-bottom:2px solid var(--azul);padding-bottom:10px;margin-bottom:12px}
+.op-head h2{margin:2px 0 4px}
+.eyebrow-ink{font:600 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--azul);margin:0}
+.board{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:6px}
+.col{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px;min-width:0;display:flex;flex-direction:column;gap:8px}
+.col h3{font-family:var(--display);font-weight:500;font-size:19px;margin:0;display:flex;justify-content:space-between;align-items:baseline}
+.col h3 .n{font:600 13px var(--body);color:var(--muted);font-variant-numeric:tabular-nums}
+.col .prompt{margin:-6px 0 2px;font-size:13px;color:var(--muted)}
+.col .none{margin:0;font-size:14px;color:var(--muted)}
+.col .entry{background:var(--bg);padding:10px 12px;border-radius:10px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
+@media (max-width:420px){.rooms{grid-template-columns:repeat(2,1fr)}}
+@media (prefers-reduced-motion:no-preference){.net,.rooms button,.choice label{transition:background .15s,border-color .15s}}
+</style>
+
+<header class="band">
+  <div class="tiles" aria-hidden="true"></div>
+  <div class="wrap">
+    <p class="eyebrow">YPO Networks · Portugal Retreat · January 2027</p>
+    <h1>Portugal Network Feedback</h1>
+    <p class="sub">Leave a question, comment or remark for any network pitch. Everything is kept so network directors and NEMs can come back to it through FY27–28.</p>
+    <nav class="tabs" role="tablist">
+      <button role="tab" id="tab-give" aria-selected="true">Give feedback</button>
+      <button role="tab" id="tab-read" aria-selected="false">Read feedback</button>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="banner" class="banner" hidden></div>
+
+  <section id="view-give">
+    <p class="step">Which room are you in?</p>
+    <div class="rooms" id="rooms"></div>
+    <p class="panel-note" id="panel-note"></p>
+
+    <p class="step" id="net-step" hidden>Which network are you giving feedback to?</p>
+    <ul class="nets" id="nets"></ul>
+
+    <form id="form" hidden>
+      <p class="for" id="form-for"></p>
+      <div>
+        <span class="field-label">What kind of feedback?</span>
+        <div class="choice" id="kinds"></div>
+      </div>
+      <div>
+        <span class="field-label">Which part of the pitch? <span class="hint">(optional)</span></span>
+        <div class="choice" id="parts"></div>
+      </div>
+      <div>
+        <label class="field-label" for="text">Your feedback</label>
+        <textarea id="text" maxlength="2000" required placeholder="Be specific and honest. What would help this network move forward?"></textarea>
+      </div>
+      <div>
+        <label class="field-label" for="name">Your name <span class="hint">(optional, leave blank to stay anonymous)</span></label>
+        <input type="text" id="name" maxlength="80" autocomplete="name">
+      </div>
+      <button class="primary" id="send" type="submit">Send feedback</button>
+    </form>
+  </section>
+
+  <section id="view-read" hidden>
+    <p class="step">Choose a network</p>
+    <select id="read-net" aria-label="Network"></select>
+    <div id="read-out"></div>
+  </section>
+</main>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+const ROOMS = [
+  {n:1, panel:"Ana, Suzan, Khadija, Lama", pod:"Laura Pendleton / Celine Lawrence", nets:[
+    ["0:05","bmp","Business Marketplace (BMP)","Suzan Akin","Laura Pendleton"],
+    ["0:11","en","Entrepreneurship Network (EN)","Natalia Nenadovit","Laura Pendleton"],
+    ["0:17","cin","Construction Industry Network (CIN)","Aban Bottlewala","Taylor White"],
+    ["0:23","ldn","Leadership Development Network (LDN)","Wioletta Wisniewska","Taylor White"],
+    ["0:29","gdn","Global Diplomacy Network (GDN)","Celine Lawrence","Katherine Ponder"],
+    ["0:35","retail","Retail Network","Martina Rutherford","Katherine Ponder"],
+    ["0:41","ysp","Spouse/Partner Community (YSP)","Kate Chase","Aishwarya Shukla"],
+    ["0:47","yng","YNG","Kelsey McFarland (Interim)","Elijah Whitley"]]},
+  {n:2, panel:"Jonathan, Kudzai, Michelle, Kaitlyn", pod:"Kristen Goezaar / Orisha Ferndale", nets:[
+    ["0:05","auto","Automotive Network (Auto)","Alyssa McLean","Kristen Goezaar"],
+    ["0:11","dbgn","Doing Business Globally Network (DBGN)","Alyssa McLean","Kristen Goezaar"],
+    ["0:17","cbn","China Business Network (CBN)","Avinash Sharma (Interim)","Orisha Ferndale"],
+    ["0:23","tech","Technology Network (Tech)","Kotsai Makamure","Orisha Ferndale"],
+    ["0:29","hbn","Healthcare Business Network (HBN)","Tanya Sinha","Laiken Chetty"],
+    ["0:35","sebn","Sports and Entertainment Business Network (SEBN)","Marcos Peterson","Laiken Chetty"],
+    ["0:41","deal","Deal Network (Deal)","Nyarai Gomiwa","Luthando Zenzile"],
+    ["0:47","parenting","Parenting Community","Jessica Lovell","Jessica-Ann Masson"]]},
+  {n:3, panel:"Jessica Zell, Greg, Jeff, Jeremy, Lindy", pod:"Tania Martins", nets:[
+    ["0:05","fsn","Financial Services Network (FSN)","Brandy Thornhill","Tania Martins"],
+    ["0:11","mxn","Manufacturing Excellence Network (MXN)","Jacqui Kimmel","Tania Martins"],
+    ["0:17","gfbn","Global Family Business Network (GFBN)","Hailey Ruthenberg","Carrie Bray"],
+    ["0:23","wbn","Women's Business Network (WBN)","Nicole Van Der Net","Carrie Bray"],
+    ["0:29","hosp","Hospitality Business Network (HOSP)","Avinash Sharma","Kendra Stetson"],
+    ["0:35","mn","Marketing Network (MN)","Lorilee Levy","Kendra Stetson"],
+    ["0:41","outdoors","Sports & the Outdoors Network","Tiffany Walker","Ev Amis Adair"],
+    ["0:47","hw","Health & Wellness Network (H&W)","Jennifer Cunningham","Ev Amis Adair"]]},
+  {n:4, panel:"Zoe, Erin, Sam, Constance", pod:"Zyra Zuniga", nets:[
+    ["0:05","arts","Arts Network","Tiffany Walker","Reubenett Andrews"],
+    ["0:11","dining","Fine Dining Network","Tiffany Walker","Reubenett Andrews"],
+    ["0:17","wine","Wine Network","Tiffany Walker","Reubenett Andrews"],
+    ["0:23","in","Investing Network (IN)","Andiswa Machanyana","Zyra Zuniga"],
+    ["0:29","rein","Real Estate Industry Network (REIN)","Chrizelda Davel","Zyra Zuniga"],
+    ["0:35","peace","Peace Action Network","Katie Hatfield","Katrina Wise"],
+    ["0:41","planet","Planet Action Network","Katie Hatfield","Katrina Wise"],
+    ["0:47","sbn","Sustainable Business Network (SBN)","Katie Hatfield","Katrina Wise"],
+    ["0:53","sin","Social Impact Network","Katie Hatfield","Katrina Wise"]]}
+];
+const NETS = {};
+ROOMS.forEach(r => r.nets.forEach(([time,id,name,nd,nem]) => NETS[id] = {time,id,name,nd,nem,room:r.n}));
+const KINDS = [["question","Question"],["comment","Comment"],["remark","Remark"],["offer","Offer to help"]];
+const PARTS = [["focus","Focus"],["win","Win"],["challenge","Challenge"],["ask","Ask"]];
+
+const $ = id => document.getElementById(id);
+const state = { room: null, net: null, readNet: null, readKind: null, entries: [] };
+let db = null, canWrite = true, ready = false;
+
+function el(tag, attrs = {}, ...kids){
+  const e = document.createElement(tag);
+  for (const [k,v] of Object.entries(attrs)){
+    if (k === "class") e.className = v; else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v);
+  }
+  for (const k of kids) if (k != null) e.append(k);
+  return e;
+}
+function toast(msg){ const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2600); }
+function countFor(id){ return state.entries.filter(e => e.network === id).length; }
+
+function renderRooms(){
+  const box = $("rooms"); box.replaceChildren();
+  ROOMS.forEach(r => box.append(el("button", {type:"button","aria-pressed": String(state.room === r.n), onclick(){ state.room = r.n; state.net = null; renderGive(); }}, "Room " + r.n)));
+  const r = ROOMS[state.room-1];
+  $("panel-note").textContent = r ? "Panelists: " + r.panel + " · Strategy Pod: " + r.pod : "Tap your room to see the networks presenting there.";
+  $("net-step").hidden = !r;
+}
+function renderNets(){
+  const list = $("nets"); list.replaceChildren();
+  if (!state.room) return;
+  ROOMS[state.room-1].nets.forEach(([time,id,name,nd,nem]) => {
+    const c = countFor(id);
+    list.append(el("li", {}, el("button", {type:"button", class:"net", "aria-pressed": String(state.net === id), onclick(){ state.net = id; renderGive(); $("form").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"}); }},
+      el("span", {class:"time"}, time),
+      el("span", {class:"name"}, name, el("span", {class:"who"}, "ND " + nd + " · NEM " + nem)),
+      el("span", {class:"count"}, c ? c + (c === 1 ? " note" : " notes") : ""))));
+  });
+}
+function renderChoices(box, items, name, required){
+  box.replaceChildren();
+  items.forEach(([v,label], i) => {
+    const id = name + "-" + v;
+    box.append(el("input", {type:"radio", name, id, value:v, checked: required && i === 0 ? "" : false}), el("label", {for:id}, label));
+  });
+}
+function renderForm(){
+  const f = $("form");
+  if (!state.net){ f.hidden = true; return; }
+  f.hidden = false;
+  $("form-for").textContent = "Feedback for " + NETS[state.net].name;
+  $("send").disabled = !ready || !canWrite;
+}
+function renderGive(){ renderRooms(); renderNets(); renderForm(); }
+
+function renderReadSelect(){
+  const s = $("read-net");
+  if (s.options.length) return;
+  s.append(el("option", {value:""}, "Select a network…"));
+  ROOMS.forEach(r => {
+    const g = el("optgroup", {label:"Room " + r.n});
+    r.nets.forEach(([,id,name]) => g.append(el("option", {value:id}, name)));
+    s.append(g);
+  });
+  s.addEventListener("change", () => { state.readNet = s.value || null; state.readKind = null; renderRead(); });
+}
+function fmt(ts){ try { return new Date(ts).toLocaleString(undefined, {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}); } catch { return ""; } }
+const SECTIONS = [["focus","Focus","Where are we going?"],["win","Win","What are we building on?"],["challenge","Challenge","What could inhibit progress?"],["ask","Ask","Where could this room help?"],["","General","Feedback on the pitch as a whole"]];
+const kindLabel = k => (KINDS.find(x => x[0] === k) || ["", "Note"])[1];
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ARTIFACT_URL = "https://claude.ai/artifact/8nc7TRGnwPsBCNBLFa3614";
+function shareLink(id){ return (store.mode === "web" ? location.origin + location.pathname : ARTIFACT_URL) + "#net-" + id; }
+
+function renderRead(){
+  renderReadSelect();
+  $("read-net").value = state.readNet || "";
+  const out = $("read-out"); out.replaceChildren();
+  if (!state.readNet){
+    const total = state.entries.length;
+    out.append(el("p", {class:"empty", style:"margin-top:14px"}, total ? total + " pieces of feedback saved so far across all networks. Pick a network above to open its one-pager." : "No feedback yet. Once people send it from the Give feedback tab, each network's one-pager fills up here."));
+    return;
+  }
+  const net = NETS[state.readNet];
+  const all = state.entries.filter(e => e.network === net.id);
+  const head = el("div", {class:"op-head"},
+    el("p", {class:"eyebrow-ink"}, "Feedback one-pager · Portugal Retreat, January 2027"),
+    el("h2", {}, net.name),
+    el("p", {class:"panel-note"}, "ND " + net.nd + " · NEM " + net.nem + " · Room " + net.room + " at " + net.time));
+  const sum = el("div", {class:"summary"});
+  sum.append(el("button", {type:"button", class:"pill", "aria-pressed": String(!state.readKind), onclick(){ state.readKind = null; renderRead(); }}, "All " + all.length));
+  KINDS.forEach(([k,label]) => {
+    const n = all.filter(e => e.kind === k).length;
+    if (n) sum.append(el("button", {type:"button", class:"pill k-" + k, "aria-pressed": String(state.readKind === k), onclick(){ state.readKind = k; renderRead(); }}, label + " " + n));
+  });
+  const actions = el("div", {class:"actions"},
+    el("button", {type:"button", class:"ghost", onclick(){ copyText(shareLink(net.id), "Link to this one-pager copied"); }}, "Copy link"),
+    all.length ? el("button", {type:"button", class:"ghost", onclick(){ downloadOnePager(net, all); }}, "Download one-pager") : null);
+  out.append(head, el("div", {class:"row"}, sum, actions));
+  if (!all.length){ out.append(el("p", {class:"empty"}, "No feedback for this network yet. Share the link above so the ND and NEM can come back to it.")); return; }
+  const rows = state.readKind ? all.filter(e => e.kind === state.readKind) : all;
+  const board = el("div", {class:"board"});
+  SECTIONS.forEach(([p, title, prompt]) => {
+    const list = rows.filter(e => (e.part || "") === p);
+    if (!list.length && p === "") return;
+    const col = el("section", {class:"col"}, el("h3", {}, title, el("span", {class:"n"}, String(list.length))), el("p", {class:"prompt"}, prompt));
+    if (!list.length) col.append(el("p", {class:"none"}, "Nothing yet"));
+    list.forEach(e => col.append(el("article", {class:"entry"},
+      el("div", {class:"meta"}, el("span", {class:"tag k-" + e.kind}, kindLabel(e.kind)), el("span", {}, (e.name || "Anonymous") + " · " + fmt(e.at))),
+      el("p", {}, e.text))));
+    board.append(col);
+  });
+  out.append(board);
+}
+
+function onePagerHtml(net, rows){
+  const sec = SECTIONS.map(([p, title, prompt]) => {
+    const list = rows.filter(e => (e.part || "") === p);
+    if (!list.length && p === "") return "";
+    return '<section><h2>' + title + ' <small>' + list.length + '</small></h2><p class="q">' + prompt + '</p>' +
+      (list.length ? list.map(e => '<div class="e"><b>' + esc(kindLabel(e.kind)) + '</b><p>' + esc(e.text) + '</p><i>' + esc(e.name || "Anonymous") + ' · ' + esc(fmt(e.at)) + '</i></div>').join("") : '<p class="q">Nothing yet</p>') + '</section>';
+  }).join("");
+  const counts = KINDS.map(([k,l]) => [l, rows.filter(e => e.kind === k).length]).filter(x => x[1]).map(x => x[0] + ": " + x[1]).join(" · ");
+  return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(net.name) + ' feedback</title><style>' +
+    'body{font-family:Georgia,serif;color:#18213a;max-width:900px;margin:0 auto;padding:32px 20px}header{border-bottom:3px solid #1f4fa8;padding-bottom:12px;margin-bottom:20px}' +
+    '.k{font:600 12px Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#1f4fa8}h1{margin:6px 0}.m{font:14px Arial,sans-serif;color:#5b6582}' +
+    'main{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px}section{border:1px solid #dfe3ee;border-radius:10px;padding:14px;break-inside:avoid}' +
+    'h2{font-size:18px;margin:0}small{color:#5b6582;font-weight:400}.q{font:13px Arial,sans-serif;color:#5b6582;margin:2px 0 10px}.e{border-top:1px solid #dfe3ee;padding:8px 0}' +
+    '.e b{font:700 11px Arial,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:#1f4fa8}.e p{margin:4px 0;white-space:pre-wrap}.e i{font:12px Arial,sans-serif;color:#5b6582}' +
+    '</style></head><body><header><div class="k">YPO Networks · Portugal Retreat · January 2027</div><h1>' + esc(net.name) + '</h1><div class="m">ND ' + esc(net.nd) + ' · NEM ' + esc(net.nem) + ' · ' + rows.length + ' pieces of feedback (' + counts + ')</div></header><main>' + sec + '</main></body></html>';
+}
+async function downloadOnePager(net, rows){
+  const html = onePagerHtml(net, rows), filename = net.id.toUpperCase() + "-Portugal-feedback.html";
+  if (store.mode === "web"){
+    const a = el("a", {href: URL.createObjectURL(new Blob([html], {type:"text/html"})), download: filename});
+    document.body.append(a); a.click(); a.remove(); return;
+  }
+  const dl = window.claude && window.claude.use ? await window.claude.use("downloads") : null;
+  if (!dl){ toast("Downloads aren't available here. Use Copy link instead."); return; }
+  try { const r = await dl.save({filename, data: html}); if (r && r.status === "saved") toast("One-pager saved"); }
+  catch (e) { if (!e || e.code !== "declined") toast("Couldn't save the file. Try again."); }
+}
+async function copyText(t, okMsg){
+  try { await navigator.clipboard.writeText(t); toast(okMsg || "Copied"); }
+  catch { const ta = el("textarea", {}); ta.value = t; document.body.append(ta); ta.select(); try { document.execCommand("copy"); toast(okMsg || "Copied"); } catch { toast("Copy this link: " + t); } ta.remove(); }
+}
+
+function showTab(which){
+  const give = which === "give";
+  $("tab-give").setAttribute("aria-selected", String(give));
+  $("tab-read").setAttribute("aria-selected", String(!give));
+  $("view-give").hidden = !give; $("view-read").hidden = give;
+  if (give) renderGive(); else renderRead();
+}
+$("tab-give").onclick = () => showTab("give");
+$("tab-read").onclick = () => showTab("read");
+
+// Storage: the shared Claude database when this runs as an Artifact, or the site's own /api/feedback when hosted on the web (Vercel).
+const store = {
+  mode: null,
+  async start(onData){
+    if (!window.claude || !window.claude.use){
+      this.mode = "web";
+      const pull = async () => { try { const r = await fetch("/api/feedback", {cache:"no-store"}); if (r.ok) onData(await r.json()); } catch {} };
+      await pull(); setInterval(pull, 15000); return true;
+    }
+    this.mode = "artifact";
+    db = await window.claude.use("db");
+    if (!db) return false;
+    db.collection("feedback").orderBy("at", "desc").limit(1000).onSnapshot(snap => onData(snap.docs.map(d => ({id: d.id, ...d.data()}))),
+      () => showBanner("Live updates paused. Reload the page to reconnect."));
+    return true;
+  },
+  async add(rec){
+    if (this.mode === "web"){
+      const r = await fetch("/api/feedback", {method:"POST", headers:{"content-type":"application/json"}, body: JSON.stringify(rec)});
+      if (!r.ok) throw {code: "http_" + r.status};
+      const saved = await r.json(); state.entries = [saved, ...state.entries]; refresh(); return;
+    }
+    await db.collection("feedback").add(rec);
+  }
+};
+function refresh(){ if (!$("view-give").hidden) renderNets(); else renderRead(); }
+
+$("form").addEventListener("submit", async ev => {
+  ev.preventDefault();
+  const text = $("text").value.trim();
+  if (!text){ $("text").focus(); toast("Write your feedback first"); return; }
+  if (!ready) return;
+  const kind = (document.querySelector('input[name="kind"]:checked') || {}).value || "comment";
+  const part = (document.querySelector('input[name="part"]:checked') || {}).value || null;
+  const net = NETS[state.net];
+  $("send").disabled = true;
+  try {
+    await store.add({network: net.id, room: net.room, kind, part, text, name: $("name").value.trim() || null, at: Date.now()});
+    $("text").value = "";
+    document.querySelectorAll('input[name="part"]').forEach(i => i.checked = false);
+    toast("Sent to " + net.name);
+  } catch (e) {
+    if (e && e.code === "invalid_argument"){ canWrite = false; showBanner("This page is read-only for you, so feedback can't be sent from this account."); }
+    else if (e && e.code === "quota_exceeded") toast("The feedback store is full. Tell the organiser.");
+    else toast("Couldn't send. Check your connection and try again.");
+  } finally { renderForm(); }
+});
+function showBanner(msg){ const b = $("banner"); b.textContent = msg; b.hidden = !msg; }
+
+// Links: …#room-3 opens that room (QR code on each door); …#net-bmp opens that network's one-pager.
+let startTab = "give";
+const h = location.hash || "";
+let m = /^#room-([1-4])$/.exec(h);
+if (m) state.room = Number(m[1]);
+m = /^#net-([a-z]+)$/.exec(h);
+if (m && NETS[m[1]]){ state.readNet = m[1]; state.room = NETS[m[1]].room; startTab = "read"; }
+renderChoices($("kinds"), KINDS, "kind", true);
+renderChoices($("parts"), PARTS, "part", false);
+showTab(startTab);
+
+(async () => {
+  ready = await store.start(rows => { state.entries = rows; refresh(); });
+  if (!ready){ showBanner("Feedback can't be saved in this view. Open this page while signed in to Claude to send and read feedback."); renderForm(); return; }
+  if (store.mode === "artifact"){
+    const user = await window.claude.use("user");
+    if (user && user.can){ try { const w = await user.can("data.write"); if (w === false){ canWrite = false; showBanner("You can read feedback here, but your access level doesn't allow sending it."); } } catch {} }
+  }
+  renderForm();
+})();
+</script>
+
+</body></html>
