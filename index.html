@@ -57,7 +57,8 @@ h2{font-family:var(--display);font-weight:300;font-size:22px;margin:28px 0 10px;
 .net{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;width:100%;text-align:left;font:inherit;color:inherit;padding:12px 14px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);cursor:pointer}
 .net:hover{border-color:var(--azul)}
 .net[aria-pressed="true"]{border-color:var(--azul);box-shadow:inset 0 0 0 1px var(--azul);background:var(--azul-soft)}
-.net .time{font-variant-numeric:tabular-nums;font-size:13px;color:var(--muted);min-width:44px}
+.net .time{display:flex;flex-direction:column;align-items:center;font-variant-numeric:tabular-nums;font-size:20px;font-weight:300;line-height:1.1;color:var(--azul);min-width:58px}
+.net .time small{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .net .name{font-weight:600;min-width:0}
 .net .who{display:block;font-weight:400;font-size:13px;color:var(--muted)}
 .net .count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -215,7 +216,7 @@ const ROOMS = [
     ["0:54","sin","Social Impact Network","Katie Hatfield","Katrina Wise"]]}
 ];
 const NETS = {};
-ROOMS.forEach(r => r.nets.forEach(([time,id,name,nd,nem]) => NETS[id] = {time,id,name,nd,nem,room:r.n}));
+ROOMS.forEach(r => r.nets.forEach(([time,id,name,nd,nem], i) => NETS[id] = {time,id,name,nd,nem,room:r.n,order:i+1}));
 NETS.main = {time:"1:10", id:"main", name:"Main Room: the whole experience", nd:"", nem:"", room:0, main:true};
 const KINDS = [["question","Question"],["comment","Comment"],["remark","Remark"],["offer","Offer to help"]];
 const PARTS = [["focus","Focus"],["win","Win"],["challenge","Challenge"],["ask","Ask"]];
@@ -248,10 +249,10 @@ function renderRooms(){
 function renderNets(){
   const list = $("nets"); list.replaceChildren();
   if (!state.room || state.room === "main") return;
-  ROOMS[state.room-1].nets.forEach(([time,id,name,nd,nem]) => {
+  ROOMS[state.room-1].nets.forEach(([time,id,name,nd,nem], i) => {
     const c = countFor(id);
     list.append(el("li", {}, el("button", {type:"button", class:"net", "aria-pressed": String(state.net === id), onclick(){ state.net = id; renderGive(); $("form").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"}); }},
-      el("span", {class:"time"}, time),
+      el("span", {class:"time"}, el("small", {}, "Presenter"), String(i + 1)),
       el("span", {class:"name"}, name, el("span", {class:"who"}, "ND " + nd + " · NEM " + nem)),
       el("span", {class:"count"}, c ? c + (c === 1 ? " note" : " notes") : ""))));
   });
@@ -308,7 +309,7 @@ function renderRead(){
   const head = el("div", {class:"op-head"},
     el("p", {class:"eyebrow-ink"}, "Feedback one-pager · Portugal Retreat, January 2027"),
     el("h2", {}, net.name),
-    el("p", {class:"panel-note"}, net.main ? "Remarks on the whole retreat session, left in the Main Room synthesis" : "ND " + net.nd + " · NEM " + net.nem + " · Room " + net.room + " at " + net.time));
+    el("p", {class:"panel-note"}, net.main ? "Remarks on the whole retreat session, left in the Main Room synthesis" : "ND " + net.nd + " · NEM " + net.nem + " · Room " + net.room + ", Presenter " + net.order));
   const sum = el("div", {class:"summary"});
   sum.append(el("button", {type:"button", class:"pill", "aria-pressed": String(!state.readKind), onclick(){ state.readKind = null; renderRead(); }}, "All " + all.length));
   KINDS.forEach(([k,label]) => {
