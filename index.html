@@ -115,6 +115,7 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
 .ai .panel-note{margin:0}
 .ai-out{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--yellow);border-radius:var(--radius);padding:14px 16px;width:100%;white-space:pre-wrap}
 .ai-out p{margin:0 0 10px}.ai-meta{font-size:13px;color:var(--muted)}
+.panel-note strong{color:var(--ink);font-weight:600}
 .host-links{margin-top:28px;font-size:14px;color:var(--muted)}
 .host-links a{color:var(--azul);font-weight:600}
 .host-top{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:8px;margin-top:20px}
@@ -241,7 +242,7 @@ body.host-mode .logo{margin-bottom:12px}
 
 <script>
 const ROOMS = [
-  {n:1, facil:"Suzan", panel:"Ana, Suzan, Khadija, Lama, Cortney", pod:"Laura Pendleton / Celine Lawrence", nets:[
+  {n:1, facil:"Suzan Akin", panel:"Ana Severance, Suzan Akin, Khadija Solomons, Lama Ahmed, Cortney Ellis", pod:"Laura Pendleton / Celine Lawrence", nets:[
     ["0:05","gdn","Global Diplomacy Network (GDN)","Celine Lawrence","Katherine Ponder"],
     ["0:12","outdoors","Sports & the Outdoors Network","Tiffany Walker","Ev Amis Adair"],
     ["0:19","arts","Arts Network","Tiffany Walker","Reubenett Andrews"],
@@ -250,7 +251,7 @@ const ROOMS = [
     ["0:40","hw","Health & Wellness Network (H&W)","Jennifer Cunningham","Ev Amis Adair"],
     ["0:47","dining","Fine Dining Network","Tiffany Walker","Reubenett Andrews"],
     ["0:54","wine","Wine Network","Tiffany Walker","Reubenett Andrews"]]},
-  {n:2, facil:"Greg", panel:"Erin, Kudzai, Michelle, Greg", pod:"Kristen Goezaar", nets:[
+  {n:2, facil:"Greg Demirtzoglou", panel:"Erin Lukie, Kudzai Muchechetere, Michelle Medlock, Greg Demirtzoglou", pod:"Kristen Goezaar", nets:[
     ["0:05","auto","Automotive Network (Auto)","Alyssa McLean","Kristen Goezaar"],
     ["0:12","dbgn","Doing Business Globally Network (DBGN)","Alyssa McLean","Kristen Goezaar"],
     ["0:19","cin","Construction Industry Network (CIN)","Aban Bottlewala","Taylor White"],
@@ -259,7 +260,7 @@ const ROOMS = [
     ["0:40","wbn","Women's Business Network (WBN)","Nicole Van Der Net","Carrie Bray"],
     ["0:47","ysp","Spouse/Partner Community (YSP)","Kate Chase","Aishwarya Shukla"],
     ["0:54","yng","YNG","Kelsey McFarland (Interim)","Elijah Whitley"]]},
-  {n:3, facil:"Jessica Zell", panel:"Jessica Zell, Jeff, Jeremy, Lindy, Anthonise", pod:"Tania Martins / Orisha Ferndale", nets:[
+  {n:3, facil:"Jessica Zell", panel:"Jessica Zell, Jeff Short, Jeremy Luz, Lindy Martin, Anthonise Van Der Lilly", pod:"Tania Martins / Orisha Ferndale", nets:[
     ["0:05","fsn","Financial Services Network (FSN)","Brandy Thornhill","Tania Martins"],
     ["0:12","mxn","Manufacturing Excellence Network (MXN)","Jacqui Kimmel","Tania Martins"],
     ["0:19","hosp","Hospitality Business Network (HOSP)","Avinash Sharma","Kendra Stetson"],
@@ -268,7 +269,7 @@ const ROOMS = [
     ["0:40","tech","Technology Network (Tech)","Kotsai Makamure","Orisha Ferndale"],
     ["0:47","parenting","Parenting Community","Jessica Lovell","Jessica-Ann Masson"],
     ["0:54","deal","Deal Network (Deal)","Nyarai Gomiwa","Luthando Zenzile"]]},
-  {n:4, facil:"Jonathan", panel:"Sam, Constance, Jonathan, Kaitlyn", pod:"Zyra Zuniga", nets:[
+  {n:4, facil:"Jonathan Csanyi-Fritz", panel:"Sam Borland, Constance Miller, Jonathan Csanyi-Fritz, Kaitlyn Pecson", pod:"Zyra Zuniga", nets:[
     ["0:05","hbn","Healthcare Business Network (HBN)","Tanya Sinha","Laiken Chetty"],
     ["0:12","sebn","Sports and Entertainment Business Network (SEBN)","Marcos Peterson","Laiken Chetty"],
     ["0:19","in","Investing Network (IN)","Andiswa Machanyana","Zyra Zuniga"],
@@ -321,7 +322,8 @@ function renderRooms(){
   $("mainroom").setAttribute("aria-pressed", String(state.room === "main"));
   if (state.room === "main"){ $("panel-note").textContent = "Panelists share key points from each room, then common themes and next steps."; $("net-step").hidden = true; return; }
   const r = ROOMS[state.room-1];
-  $("panel-note").textContent = r ? "Facilitator: " + r.facil + " · Panelists: " + r.panel + " · Strategy Pod: " + r.pod : "Tap your room to see the networks presenting there.";
+  if (r) $("panel-note").replaceChildren("Facilitator: ", el("strong", {}, r.facil), " · Panelists: ", el("strong", {}, r.panel), " · Strategy Pod: ", el("strong", {}, r.pod));
+  else $("panel-note").textContent = "Tap your room to see the networks presenting there.";
   $("net-step").hidden = !r;
 }
 function renderNets(){
