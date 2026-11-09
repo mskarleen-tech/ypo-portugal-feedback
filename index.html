@@ -177,47 +177,47 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
 
 <script>
 const ROOMS = [
-  {n:1, panel:"Ana, Suzan, Khadija, Lama", pod:"Laura Pendleton / Celine Lawrence", nets:[
-    ["0:05","bmp","Business Marketplace (BMP)","Suzan Akin","Laura Pendleton"],
-    ["0:11","en","Entrepreneurship Network (EN)","Natalia Nenadovit","Laura Pendleton"],
-    ["0:17","cin","Construction Industry Network (CIN)","Aban Bottlewala","Taylor White"],
-    ["0:23","ldn","Leadership Development Network (LDN)","Wioletta Wisniewska","Taylor White"],
-    ["0:29","gdn","Global Diplomacy Network (GDN)","Celine Lawrence","Katherine Ponder"],
-    ["0:35","retail","Retail Network","Martina Rutherford","Katherine Ponder"],
-    ["0:41","ysp","Spouse/Partner Community (YSP)","Kate Chase","Aishwarya Shukla"],
-    ["0:47","yng","YNG","Kelsey McFarland (Interim)","Elijah Whitley"]]},
-  {n:2, panel:"Jonathan, Kudzai, Michelle, Kaitlyn", pod:"Kristen Goezaar / Orisha Ferndale", nets:[
+  {n:1, facil:"Suzan", panel:"Ana, Suzan, Khadija, Lama, Cortney", pod:"Laura Pendleton / Celine Lawrence", nets:[
+    ["0:05","gdn","Global Diplomacy Network (GDN)","Celine Lawrence","Katherine Ponder"],
+    ["0:12","outdoors","Sports & the Outdoors Network","Tiffany Walker","Ev Amis Adair"],
+    ["0:19","arts","Arts Network","Tiffany Walker","Reubenett Andrews"],
+    ["0:26","en","Entrepreneurship Network (EN)","Natalia Nenadovit","Laura Pendleton"],
+    ["0:33","retail","Retail Network","Martina Rutherford","Katherine Ponder"],
+    ["0:40","hw","Health & Wellness Network (H&W)","Jennifer Cunningham","Ev Amis Adair"],
+    ["0:47","dining","Fine Dining Network","Tiffany Walker","Reubenett Andrews"],
+    ["0:54","wine","Wine Network","Tiffany Walker","Reubenett Andrews"],
+    ["1:01","bmp","Business Marketplace (BMP)","Suzan Akin","Laura Pendleton"]]},
+  {n:2, facil:"Greg", panel:"Erin, Kudzai, Michelle, Greg", pod:"Kristen Goezaar", nets:[
     ["0:05","auto","Automotive Network (Auto)","Alyssa McLean","Kristen Goezaar"],
-    ["0:11","dbgn","Doing Business Globally Network (DBGN)","Alyssa McLean","Kristen Goezaar"],
-    ["0:17","cbn","China Business Network (CBN)","Avinash Sharma (Interim)","Orisha Ferndale"],
-    ["0:23","tech","Technology Network (Tech)","Kotsai Makamure","Orisha Ferndale"],
-    ["0:29","hbn","Healthcare Business Network (HBN)","Tanya Sinha","Laiken Chetty"],
-    ["0:35","sebn","Sports and Entertainment Business Network (SEBN)","Marcos Peterson","Laiken Chetty"],
-    ["0:41","deal","Deal Network (Deal)","Nyarai Gomiwa","Luthando Zenzile"],
-    ["0:47","parenting","Parenting Community","Jessica Lovell","Jessica-Ann Masson"]]},
-  {n:3, panel:"Jessica Zell, Greg, Jeff, Jeremy, Lindy", pod:"Tania Martins", nets:[
+    ["0:12","dbgn","Doing Business Globally Network (DBGN)","Alyssa McLean","Kristen Goezaar"],
+    ["0:19","cin","Construction Industry Network (CIN)","Aban Bottlewala","Taylor White"],
+    ["0:26","ldn","Leadership Development Network (LDN)","Wioletta Wisniewska","Taylor White"],
+    ["0:33","gfbn","Global Family Business Network (GFBN)","Hailey Ruthenberg","Carrie Bray"],
+    ["0:40","wbn","Women's Business Network (WBN)","Nicole Van Der Net","Carrie Bray"],
+    ["0:47","ysp","Spouse/Partner Community (YSP)","Kate Chase","Aishwarya Shukla"],
+    ["0:54","yng","YNG","Kelsey McFarland (Interim)","Elijah Whitley"]]},
+  {n:3, facil:"Jessica Zell", panel:"Jessica Zell, Jeff, Jeremy, Lindy, Anthonise", pod:"Tania Martins / Orisha Ferndale", nets:[
     ["0:05","fsn","Financial Services Network (FSN)","Brandy Thornhill","Tania Martins"],
-    ["0:11","mxn","Manufacturing Excellence Network (MXN)","Jacqui Kimmel","Tania Martins"],
-    ["0:17","gfbn","Global Family Business Network (GFBN)","Hailey Ruthenberg","Carrie Bray"],
-    ["0:23","wbn","Women's Business Network (WBN)","Nicole Van Der Net","Carrie Bray"],
-    ["0:29","hosp","Hospitality Business Network (HOSP)","Avinash Sharma","Kendra Stetson"],
-    ["0:35","mn","Marketing Network (MN)","Lorilee Levy","Kendra Stetson"],
-    ["0:41","outdoors","Sports & the Outdoors Network","Tiffany Walker","Ev Amis Adair"],
-    ["0:47","hw","Health & Wellness Network (H&W)","Jennifer Cunningham","Ev Amis Adair"]]},
-  {n:4, panel:"Zoe, Erin, Sam, Constance", pod:"Zyra Zuniga", nets:[
-    ["0:05","arts","Arts Network","Tiffany Walker","Reubenett Andrews"],
-    ["0:11","dining","Fine Dining Network","Tiffany Walker","Reubenett Andrews"],
-    ["0:17","wine","Wine Network","Tiffany Walker","Reubenett Andrews"],
-    ["0:23","in","Investing Network (IN)","Andiswa Machanyana","Zyra Zuniga"],
-    ["0:29","rein","Real Estate Industry Network (REIN)","Chrizelda Davel","Zyra Zuniga"],
-    ["0:35","peace","Peace Action Network","Katie Hatfield","Katrina Wise"],
-    ["0:41","planet","Planet Action Network","Katie Hatfield","Katrina Wise"],
-    ["0:47","sbn","Sustainable Business Network (SBN)","Katie Hatfield","Katrina Wise"],
-    ["0:53","sin","Social Impact Network","Katie Hatfield","Katrina Wise"]]}
+    ["0:12","mxn","Manufacturing Excellence Network (MXN)","Jacqui Kimmel","Tania Martins"],
+    ["0:19","hosp","Hospitality Business Network (HOSP)","Avinash Sharma","Kendra Stetson"],
+    ["0:26","mn","Marketing Network (MN)","Lorilee Levy","Kendra Stetson"],
+    ["0:33","cbn","China Business Network (CBN)","Avinash Sharma (Interim)","Orisha Ferndale"],
+    ["0:40","tech","Technology Network (Tech)","Kotsai Makamure","Orisha Ferndale"],
+    ["0:47","parenting","Parenting Community","Jessica Lovell","Jessica-Ann Masson"],
+    ["0:54","deal","Deal Network (Deal)","Nyarai Gomiwa","Luthando Zenzile"]]},
+  {n:4, facil:"Jonathan", panel:"Sam, Constance, Jonathan, Kaitlyn", pod:"Zyra Zuniga", nets:[
+    ["0:05","hbn","Healthcare Business Network (HBN)","Tanya Sinha","Laiken Chetty"],
+    ["0:12","sebn","Sports and Entertainment Business Network (SEBN)","Marcos Peterson","Laiken Chetty"],
+    ["0:19","in","Investing Network (IN)","Andiswa Machanyana","Zyra Zuniga"],
+    ["0:26","rein","Real Estate Industry Network (REIN)","Chrizelda Davel","Zyra Zuniga"],
+    ["0:33","sbn","Sustainable Business Network (SBN)","Katie Hatfield","Katrina Wise"],
+    ["0:40","planet","Planet Action Network","Katie Hatfield","Katrina Wise"],
+    ["0:47","peace","Peace Action Network","Katie Hatfield","Katrina Wise"],
+    ["0:54","sin","Social Impact Network","Katie Hatfield","Katrina Wise"]]}
 ];
 const NETS = {};
 ROOMS.forEach(r => r.nets.forEach(([time,id,name,nd,nem]) => NETS[id] = {time,id,name,nd,nem,room:r.n}));
-NETS.main = {time:"1:00", id:"main", name:"Main Room: the whole experience", nd:"", nem:"", room:0, main:true};
+NETS.main = {time:"1:10", id:"main", name:"Main Room: the whole experience", nd:"", nem:"", room:0, main:true};
 const KINDS = [["question","Question"],["comment","Comment"],["remark","Remark"],["offer","Offer to help"]];
 const PARTS = [["focus","Focus"],["win","Win"],["challenge","Challenge"],["ask","Ask"]];
 
@@ -243,7 +243,7 @@ function renderRooms(){
   $("mainroom").setAttribute("aria-pressed", String(state.room === "main"));
   if (state.room === "main"){ $("panel-note").textContent = "Panelists share key points from each room, then common themes and next steps."; $("net-step").hidden = true; return; }
   const r = ROOMS[state.room-1];
-  $("panel-note").textContent = r ? "Panelists: " + r.panel + " · Strategy Pod: " + r.pod : "Tap your room to see the networks presenting there.";
+  $("panel-note").textContent = r ? "Facilitator: " + r.facil + " · Panelists: " + r.panel + " · Strategy Pod: " + r.pod : "Tap your room to see the networks presenting there.";
   $("net-step").hidden = !r;
 }
 function renderNets(){
