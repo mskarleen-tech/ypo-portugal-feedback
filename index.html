@@ -114,6 +114,29 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
 .ai .panel-note{margin:0}
 .ai-out{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--yellow);border-radius:var(--radius);padding:14px 16px;width:100%;white-space:pre-wrap}
 .ai-out p{margin:0 0 10px}.ai-meta{font-size:13px;color:var(--muted)}
+.host-links{margin-top:28px;font-size:14px;color:var(--muted)}
+.host-links a{color:var(--azul);font-weight:600}
+.host-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:20px}
+.host-top .step{margin:0}
+.host-live{margin:0;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.host-live .dot{width:8px;height:8px;border-radius:50%;background:#2fbf71}
+.host-chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
+.host-chips button{font:600 13px var(--body);padding:6px 10px;border-radius:2px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.host-chips button[aria-current="true"]{background:var(--azul);color:var(--azul-ink);border-color:var(--azul)}
+.host-chips button .c{opacity:.7;font-weight:400;margin-left:4px}
+.host-now{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--yellow);border-radius:var(--radius);padding:16px}
+.host-who{min-width:0}
+.host-n{margin:0;font:700 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--azul)}
+.host-who h2{margin:2px 0 2px;font-size:clamp(22px,4vw,34px)}
+.host-who .panel-note{margin:0}
+.host-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:6px}
+.host-cols .entry.fresh{box-shadow:inset 3px 0 0 var(--yellow)}
+.host-cols .entry p{font-size:17px}
+body.host-mode nav.tabs,body.host-mode header.band .sub{display:none}
+body.host-mode h1{font-size:clamp(26px,4vw,34px);margin:8px 0 0}
+body.host-mode header.band .wrap{padding-block:14px 18px}
+body.host-mode .logo{margin-bottom:12px}
+@media (max-width:560px){.host-now{grid-template-columns:1fr 1fr}.host-who{grid-column:1/-1;grid-row:1}}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between}
 @media (max-width:420px){.rooms{grid-template-columns:repeat(2,1fr)}}
 @media (prefers-reduced-motion:no-preference){.net,.rooms button,.choice label{transition:background .15s,border-color .15s}}
@@ -178,6 +201,30 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
       <button type="button" class="primary" id="ai-go">Summarise</button>
       <div id="ai-out" class="ai-out" hidden></div>
     </section>
+    <p class="host-links">Facilitator screens: <a href="#host-1">Room 1</a> · <a href="#host-2">Room 2</a> · <a href="#host-3">Room 3</a> · <a href="#host-4">Room 4</a></p>
+  </section>
+
+  <section id="view-host" hidden>
+    <div class="host-top">
+      <p class="step" id="host-room"></p>
+      <p class="host-live"><span class="dot" aria-hidden="true"></span>Updates every few seconds</p>
+    </div>
+    <div class="host-chips" id="host-chips"></div>
+    <div class="host-now">
+      <button type="button" class="ghost" id="host-prev" aria-label="Previous presenter">‹ Previous</button>
+      <div class="host-who">
+        <p class="host-n" id="host-n"></p>
+        <h2 id="host-name"></h2>
+        <p class="panel-note" id="host-ndnem"></p>
+      </div>
+      <button type="button" class="primary" id="host-next">Next presenter ›</button>
+    </div>
+    <div class="summary" id="host-counts"></div>
+    <div class="host-cols">
+      <section class="col"><h3>Questions for the Q&amp;A</h3><div id="host-q"></div></section>
+      <section class="col"><h3>Offers and meetups</h3><div id="host-o"></div></section>
+      <section class="col"><h3>Comments</h3><div id="host-c"></div></section>
+    </div>
   </section>
 </main>
 <div class="toast" id="toast" role="status" hidden></div>
@@ -422,7 +469,10 @@ const store = {
     if (!window.claude || !window.claude.use){
       this.mode = "web";
       const pull = async () => { try { const r = await fetch("/api/feedback", {cache:"no-store"}); if (r.ok) onData(await r.json()); } catch {} };
-      await pull(); setInterval(pull, 15000); return true;
+      await pull();
+      let tick = 0;
+      setInterval(() => { tick++; const busy = state.host || $("view-give").hidden; if (busy || tick % 4 === 0) pull(); }, state.host ? 8000 : 15000);
+      return true;
     }
     this.mode = "artifact";
     db = await window.claude.use("db");
@@ -440,7 +490,48 @@ const store = {
     await db.collection("feedback").add(rec);
   }
 };
-function refresh(){ if (!$("view-give").hidden) renderNets(); else renderRead(); }
+function refresh(){ if (state.host) renderHost(); else if (!$("view-give").hidden) renderNets(); else renderRead(); }
+
+// Facilitator screen: …#host-2 shows one room's presenters and their notes as they arrive.
+function hostKey(){ return "host-room-" + state.host; }
+function hostIndex(){ try { return Math.max(0, Number(localStorage.getItem(hostKey())) || 0); } catch { return state.hostIdx || 0; } }
+function setHostIndex(i){ state.hostIdx = i; try { localStorage.setItem(hostKey(), String(i)); } catch {} renderHost(); }
+function hostEntry(e){
+  const fresh = Date.now() - (e.at || 0) < 90000;
+  return el("article", {class:"entry" + (fresh ? " fresh" : "")},
+    el("div", {class:"meta"}, el("span", {class:"tag k-" + kindOf(e.kind)}, icon(e.kind), kindLabel(e.kind)), el("span", {}, (e.name || "Anonymous") + " · " + fmt(e.at) + (fresh ? " · new" : ""))),
+    el("p", {}, e.text));
+}
+function renderHost(){
+  const room = ROOMS[state.host - 1], nets = room.nets;
+  const i = Math.min(hostIndex(), nets.length - 1);
+  const [, id, name, nd, nem] = nets[i];
+  $("host-room").textContent = "Facilitator screen · Room " + room.n + " · " + room.facil;
+  const chips = $("host-chips"); chips.replaceChildren();
+  nets.forEach(([, nid], j) => chips.append(el("button", {type:"button", "aria-current": String(j === i), title: NETS[nid].name, onclick(){ setHostIndex(j); }}, "P" + (j + 1), el("span", {class:"c"}, String(countFor(nid))))));
+  $("host-n").textContent = "Presenter " + (i + 1) + " of " + nets.length;
+  $("host-name").textContent = name;
+  $("host-ndnem").textContent = "ND " + nd + " · NEM " + nem;
+  $("host-prev").disabled = i === 0;
+  $("host-next").disabled = i === nets.length - 1;
+  const rows = state.entries.filter(e => e.network === id);
+  const by = k => rows.filter(e => k.includes(kindOf(e.kind)));
+  const fill = (box, list, empty) => { $(box).replaceChildren(...(list.length ? list.map(hostEntry) : [el("p", {class:"none"}, empty)])); };
+  fill("host-q", by(["question"]), "No questions yet");
+  fill("host-o", by(["offer","meet"]), "No offers or meetup requests yet");
+  fill("host-c", by(["comment"]), "No comments yet");
+  const counts = $("host-counts"); counts.replaceChildren();
+  KINDS.forEach(([k, label]) => { const n = by([k]).length; counts.append(el("span", {class:"pill k-" + k}, icon(k), label + " " + n)); });
+}
+function showHost(n){
+  state.host = n;
+  document.body.classList.add("host-mode");
+  $("view-give").hidden = true; $("view-read").hidden = true; $("view-host").hidden = false;
+  renderHost();
+}
+$("host-prev").onclick = () => setHostIndex(Math.max(0, hostIndex() - 1));
+$("host-next").onclick = () => setHostIndex(hostIndex() + 1);
+window.addEventListener("hashchange", () => { const mh = /^#host-([1-4])$/.exec(location.hash); if (mh) showHost(Number(mh[1])); });
 
 $("form").addEventListener("submit", async ev => {
   ev.preventDefault();
@@ -471,6 +562,8 @@ let startTab = "give";
 const h = location.hash || "";
 let m = /^#room-([1-4])$/.exec(h);
 if (m) state.room = Number(m[1]);
+const hostMatch = /^#host-([1-4])$/.exec(h);
+if (hostMatch) state.host = Number(hostMatch[1]);
 m = /^#net-([a-z]+)$/.exec(h);
 if (m && NETS[m[1]]){ state.readNet = m[1]; state.room = NETS[m[1]].room; startTab = "read"; }
 renderChoices($("kinds"), KINDS, "kind", true);
@@ -479,7 +572,7 @@ $("kinds").addEventListener("change", () => {
   $("name-hint").textContent = NEEDS_NAME[k] ? "(needed " + NEEDS_NAME[k] + ")" : "(optional, leave blank to stay anonymous)";
 });
 renderChoices($("parts"), PARTS, "part", false);
-showTab(startTab);
+if (state.host) showHost(state.host); else showTab(startTab);
 
 (async () => {
   ready = await store.start(rows => { state.entries = rows; refresh(); });
