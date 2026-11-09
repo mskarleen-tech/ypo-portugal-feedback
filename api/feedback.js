@@ -2,7 +2,7 @@
 const URL_ = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
 const TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
 const KEY = "portugal-2027-feedback";
-const KINDS = ["question", "comment", "remark", "offer"];
+const KINDS = ["question", "comment", "offer", "meet"];
 const PARTS = ["focus", "win", "challenge", "ask"];
 
 async function redis(...cmd) {

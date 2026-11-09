@@ -83,7 +83,13 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
 .pill{font:600 13px var(--body);padding:4px 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface);cursor:pointer;color:var(--ink)}
 .pill[aria-pressed="true"]{border-color:var(--ink)}
 .tag{display:inline-block;font:700 11px var(--body);letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
-.k-question{color:var(--q)} .k-comment{color:var(--c)} .k-remark{color:var(--r)} .k-offer{color:var(--o)}
+.kicon{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.choice label{display:inline-flex;align-items:center;gap:6px}
+.choice label .kicon{width:20px;height:20px}
+.pill,.tag{display:inline-flex;align-items:center;gap:5px}
+.tag .kicon{width:14px;height:14px;stroke-width:2}
+.choice input:checked + label .kicon{stroke:currentColor}
+.k-question{color:var(--q)} .k-comment{color:var(--c)} .k-meet{color:var(--r)} .k-offer{color:var(--o)}
 .entries{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
 .entry{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
 .entry .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px;color:var(--muted);margin-bottom:6px}
@@ -118,7 +124,7 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
     <img class="logo" src="assets/ypo-networks-white.png" alt="YPO Networks" width="168" height="40">
     <p class="eyebrow">Portugal Retreat · January 2027</p>
     <h1>Network Strategy Feedback</h1>
-    <p class="sub">Leave a question, comment or remark for any network pitch. Everything is kept so network directors and NEMs can come back to it through FY27–28.</p>
+    <p class="sub">Ask a question, leave a comment, offer to help or suggest a coffee for any network pitch. Everything is kept so network directors and NEMs can come back to it through FY27–28.</p>
     <nav class="tabs" role="tablist">
       <button role="tab" id="tab-give" aria-selected="true">Give feedback</button>
       <button role="tab" id="tab-read" aria-selected="false">Read feedback</button>
@@ -154,7 +160,7 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
         <textarea id="text" maxlength="2000" required placeholder="Be specific and honest. What would help this network move forward?"></textarea>
       </div>
       <div>
-        <label class="field-label" for="name">Your name <span class="hint">(optional, leave blank to stay anonymous)</span></label>
+        <label class="field-label" for="name">Your name <span class="hint" id="name-hint">(optional, leave blank to stay anonymous)</span></label>
         <input type="text" id="name" maxlength="80" autocomplete="name">
       </div>
       <button class="primary" id="send" type="submit">Send feedback</button>
@@ -218,7 +224,22 @@ const ROOMS = [
 const NETS = {};
 ROOMS.forEach(r => r.nets.forEach(([time,id,name,nd,nem], i) => NETS[id] = {time,id,name,nd,nem,room:r.n,order:i+1}));
 NETS.main = {time:"1:10", id:"main", name:"Main Room: the whole experience", nd:"", nem:"", room:0, main:true};
-const KINDS = [["question","Question"],["comment","Comment"],["remark","Remark"],["offer","Offer to help"]];
+const KINDS = [["question","Question"],["comment","Comment"],["offer","Offer to help"],["meet","Let's meet"]];
+// Older notes saved as "Remark" read as comments.
+const kindOf = k => k === "remark" ? "comment" : k;
+const ICON_PATHS = {
+  question: '<path d="M4 5h16v11H9l-5 4z"/><path d="M10 8.6a2 2 0 1 1 2.6 1.9c-.5.2-.6.6-.6 1v.4"/><circle cx="12" cy="13.6" r=".6" fill="currentColor" stroke="none"/>',
+  comment: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+  offer: '<path d="M12 20s-7-4.4-7-9.5A3.8 3.8 0 0 1 12 8a3.8 3.8 0 0 1 7 2.5C19 15.6 12 20 12 20z"/><path d="M12 11v5M9.5 13.5h5"/>',
+  meet: '<path d="M5 10h11v4a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M9 4c-.8 1 .8 2 0 3M12.5 4c-.8 1 .8 2 0 3"/>'
+};
+function icon(k){
+  const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  s.setAttribute("viewBox", "0 0 24 24"); s.setAttribute("aria-hidden", "true"); s.setAttribute("class", "kicon");
+  s.innerHTML = ICON_PATHS[kindOf(k)] || ICON_PATHS.comment;
+  return s;
+}
+const NEEDS_NAME = {offer: "so the network knows who is offering", meet: "so the network knows who to meet"};
 const PARTS = [["focus","Focus"],["win","Win"],["challenge","Challenge"],["ask","Ask"]];
 
 const $ = id => document.getElementById(id);
@@ -261,7 +282,7 @@ function renderChoices(box, items, name, required){
   box.replaceChildren();
   items.forEach(([v,label], i) => {
     const id = name + "-" + v;
-    box.append(el("input", {type:"radio", name, id, value:v, checked: required && i === 0 ? "" : false}), el("label", {for:id}, label));
+    box.append(el("input", {type:"radio", name, id, value:v, checked: required && i === 0 ? "" : false}), el("label", {for:id}, name === "kind" ? icon(v) : null, label));
   });
 }
 function renderForm(){
@@ -290,7 +311,7 @@ function renderReadSelect(){
 }
 function fmt(ts){ try { return new Date(ts).toLocaleString(undefined, {day:"numeric", month:"short", hour:"2-digit", minute:"2-digit"}); } catch { return ""; } }
 const SECTIONS = [["focus","Focus","Where are we going?"],["win","Win","What are we building on?"],["challenge","Challenge","What could inhibit progress?"],["ask","Ask","Where could this room help?"],["","General","Feedback on the pitch as a whole"]];
-const kindLabel = k => (KINDS.find(x => x[0] === k) || ["", "Note"])[1];
+const kindLabel = k => (KINDS.find(x => x[0] === kindOf(k)) || ["", "Note"])[1];
 const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const ARTIFACT_URL = "https://claude.ai/artifact/8nc7TRGnwPsBCNBLFa3614";
 function shareLink(id){ return (store.mode === "web" ? location.origin + location.pathname : ARTIFACT_URL) + "#net-" + id; }
@@ -313,15 +334,15 @@ function renderRead(){
   const sum = el("div", {class:"summary"});
   sum.append(el("button", {type:"button", class:"pill", "aria-pressed": String(!state.readKind), onclick(){ state.readKind = null; renderRead(); }}, "All " + all.length));
   KINDS.forEach(([k,label]) => {
-    const n = all.filter(e => e.kind === k).length;
-    if (n) sum.append(el("button", {type:"button", class:"pill k-" + k, "aria-pressed": String(state.readKind === k), onclick(){ state.readKind = k; renderRead(); }}, label + " " + n));
+    const n = all.filter(e => kindOf(e.kind) === k).length;
+    if (n) sum.append(el("button", {type:"button", class:"pill k-" + k, "aria-pressed": String(state.readKind === k), onclick(){ state.readKind = k; renderRead(); }}, icon(k), label + " " + n));
   });
   const actions = el("div", {class:"actions"},
     el("button", {type:"button", class:"ghost", onclick(){ copyText(shareLink(net.id), "Link to this one-pager copied"); }}, "Copy link"),
     all.length ? el("button", {type:"button", class:"ghost", onclick(){ downloadOnePager(net, all); }}, "Download one-pager") : null);
   out.append(head, el("div", {class:"row"}, sum, actions));
   if (!all.length){ out.append(el("p", {class:"empty"}, "No feedback for this network yet. Share the link above so the ND and NEM can come back to it.")); return; }
-  const rows = state.readKind ? all.filter(e => e.kind === state.readKind) : all;
+  const rows = state.readKind ? all.filter(e => kindOf(e.kind) === state.readKind) : all;
   const board = el("div", {class:"board"});
   SECTIONS.forEach(([p, title, prompt]) => {
     const list = rows.filter(e => (e.part || "") === p);
@@ -329,7 +350,7 @@ function renderRead(){
     const col = el("section", {class:"col"}, el("h3", {}, title, el("span", {class:"n"}, String(list.length))), el("p", {class:"prompt"}, prompt));
     if (!list.length) col.append(el("p", {class:"none"}, "Nothing yet"));
     list.forEach(e => col.append(el("article", {class:"entry"},
-      el("div", {class:"meta"}, el("span", {class:"tag k-" + e.kind}, kindLabel(e.kind)), el("span", {}, (e.name || "Anonymous") + " · " + fmt(e.at))),
+      el("div", {class:"meta"}, el("span", {class:"tag k-" + kindOf(e.kind)}, icon(e.kind), kindLabel(e.kind)), el("span", {}, (e.name || "Anonymous") + " · " + fmt(e.at))),
       el("p", {}, e.text))));
     board.append(col);
   });
@@ -343,7 +364,7 @@ function onePagerHtml(net, rows){
     return '<section><h2>' + title + ' <small>' + list.length + '</small></h2><p class="q">' + prompt + '</p>' +
       (list.length ? list.map(e => '<div class="e"><b>' + esc(kindLabel(e.kind)) + '</b><p>' + esc(e.text) + '</p><i>' + esc(e.name || "Anonymous") + ' · ' + esc(fmt(e.at)) + '</i></div>').join("") : '<p class="q">Nothing yet</p>') + '</section>';
   }).join("");
-  const counts = KINDS.map(([k,l]) => [l, rows.filter(e => e.kind === k).length]).filter(x => x[1]).map(x => x[0] + ": " + x[1]).join(" · ");
+  const counts = KINDS.map(([k,l]) => [l, rows.filter(e => kindOf(e.kind) === k).length]).filter(x => x[1]).map(x => x[0] + ": " + x[1]).join(" · ");
   return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(net.name) + ' feedback</title><style>' +
     'body{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#041e41;max-width:900px;margin:0 auto;padding:32px 20px}header{border-bottom:3px solid #2043e5;padding-bottom:12px;margin-bottom:20px}' +
     '.k{font:600 12px Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#2043e5}h1{margin:10px 0 6px;font-weight:200;font-size:40px}img.l{height:32px;display:block;margin-bottom:16px}.m{font:14px Arial,sans-serif;color:#5b6582}' +
@@ -431,6 +452,8 @@ $("form").addEventListener("submit", async ev => {
   const net = NETS[state.net];
   $("send").disabled = true;
   try {
+    const who = $("name").value.trim();
+    if (NEEDS_NAME[kind] && !who){ $("name").focus(); toast("Add your name " + NEEDS_NAME[kind]); $("send").disabled = false; return; }
     await store.add({network: net.id, room: net.room, kind, part, text, name: $("name").value.trim() || null, at: Date.now()});
     $("text").value = "";
     document.querySelectorAll('input[name="part"]').forEach(i => i.checked = false);
@@ -451,6 +474,10 @@ if (m) state.room = Number(m[1]);
 m = /^#net-([a-z]+)$/.exec(h);
 if (m && NETS[m[1]]){ state.readNet = m[1]; state.room = NETS[m[1]].room; startTab = "read"; }
 renderChoices($("kinds"), KINDS, "kind", true);
+$("kinds").addEventListener("change", () => {
+  const k = (document.querySelector('input[name="kind"]:checked') || {}).value;
+  $("name-hint").textContent = NEEDS_NAME[k] ? "(needed " + NEEDS_NAME[k] + ")" : "(optional, leave blank to stay anonymous)";
+});
 renderChoices($("parts"), PARTS, "part", false);
 showTab(startTab);
 

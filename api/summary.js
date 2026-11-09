@@ -9,7 +9,7 @@ const SCOPES = {
   "room-1": "Room 1", "room-2": "Room 2", "room-3": "Room 3", "room-4": "Room 4",
   main: "Main Room", all: "Whole retreat",
 };
-const LABELS = { question: "Question", comment: "Comment", remark: "Remark", offer: "Offer to help" };
+const LABELS = { question: "Question", comment: "Comment", remark: "Comment", offer: "Offer to help", meet: "Request to meet (coffee or meetup)" };
 
 async function redis(...cmd) {
   const r = await fetch(URL_, { method: "POST", headers: { Authorization: `Bearer ${TOKEN}` }, body: JSON.stringify(cmd) });
@@ -19,13 +19,13 @@ async function redis(...cmd) {
 
 const SYSTEM = `You summarise audience feedback from YPO's network strategy session at the January 2027 Portugal retreat.
 Each network gave a four-minute pitch: Focus (where they are going), Win (what they are building on), Challenge (what could inhibit progress) and Ask (where the room could help).
-Audiences left questions, comments, remarks and offers to help, optionally tagged with the part of the pitch. Main Room notes are remarks on the whole session.
+Audiences left questions, comments, offers to help and requests to meet for a coffee or meetup, optionally tagged with the part of the pitch. Main Room notes are remarks on the whole session.
 
 Write for network directors and the strategy team, in plain British English, about 250-400 words:
 1. One short opening paragraph with the overall picture.
 2. "Common themes" across networks.
 3. "Standout strengths" and "Recurring challenges".
-4. "Offers and connections" people put forward, naming the networks they were for.
+4. "Offers and connections": offers to help and requests to meet, naming the networks they were for and who made them when a name is given.
 5. "Suggested next steps", three at most.
 Use the network names given. Quote only short phrases. Do not invent anything that is not in the notes. Use plain paragraphs and short headed sections separated by blank lines, with no markdown symbols.`;
 
