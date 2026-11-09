@@ -51,6 +51,7 @@ h2{font-family:var(--display);font-weight:300;font-size:22px;margin:28px 0 10px;
 .step{font:700 12px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--ink);margin:24px 0 8px}
 .rooms{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .rooms button{font:600 15px var(--body);padding:12px 6px;border-radius:var(--radius);border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.rooms button span{display:block;font-weight:400;font-size:12px;color:var(--muted);margin-top:2px}
 .rooms button[aria-pressed="true"]{background:var(--azul);color:var(--azul-ink);border-color:var(--azul)}
 .panel-note{font-size:14px;color:var(--muted);margin:8px 0 0}
 .nets{display:flex;flex-direction:column;gap:6px;margin:0;padding:0;list-style:none}
@@ -116,8 +117,8 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
 .ai-out p{margin:0 0 10px}.ai-meta{font-size:13px;color:var(--muted)}
 .host-links{margin-top:28px;font-size:14px;color:var(--muted)}
 .host-links a{color:var(--azul);font-weight:600}
-.host-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-top:20px}
-.host-top .step{margin:0}
+.host-top{display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:8px;margin-top:20px}
+.host-top .step{margin:0 auto 0 0}
 .host-live{margin:0;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
 .host-live .dot{width:8px;height:8px;border-radius:50%;background:#2fbf71}
 .host-chips{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}
@@ -132,7 +133,8 @@ textarea:focus,input:focus,select:focus,button:focus-visible{outline:2px solid v
 .host-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:6px}
 .host-cols .entry.fresh{box-shadow:inset 3px 0 0 var(--yellow)}
 .host-cols .entry p{font-size:17px}
-body.host-mode nav.tabs,body.host-mode header.band .sub{display:none}
+body.host-mode header.band .sub{display:none}
+body.host-mode nav.tabs{margin-top:14px}
 body.host-mode h1{font-size:clamp(26px,4vw,34px);margin:8px 0 0}
 body.host-mode header.band .wrap{padding-block:14px 18px}
 body.host-mode .logo{margin-bottom:12px}
@@ -151,6 +153,7 @@ body.host-mode .logo{margin-bottom:12px}
     <nav class="tabs" role="tablist">
       <button role="tab" id="tab-give" aria-selected="true">Give feedback</button>
       <button role="tab" id="tab-read" aria-selected="false">Read feedback</button>
+      <button role="tab" id="tab-host" aria-selected="false">Host a room</button>
     </nav>
   </div>
   <div class="cut" aria-hidden="true"><img src="assets/ypo-mark-navy.png" alt="" class="mark-light"><img src="assets/ypo-mark-white.png" alt="" class="mark-dark"></div>
@@ -201,12 +204,18 @@ body.host-mode .logo{margin-bottom:12px}
       <button type="button" class="primary" id="ai-go">Summarise</button>
       <div id="ai-out" class="ai-out" hidden></div>
     </section>
-    <p class="host-links">Facilitator screens: <a href="#host-1">Room 1</a> · <a href="#host-2">Room 2</a> · <a href="#host-3">Room 3</a> · <a href="#host-4">Room 4</a></p>
   </section>
 
   <section id="view-host" hidden>
+    <div id="host-pick">
+      <p class="step">Which room are you hosting?</p>
+      <div class="rooms" id="host-rooms"></div>
+      <p class="panel-note">You'll see each presenter in order, with the questions, offers and comments coming in live, so you can run the Q&amp;A from here.</p>
+    </div>
+    <div id="host-screen" hidden>
     <div class="host-top">
       <p class="step" id="host-room"></p>
+      <button type="button" class="ghost" id="host-switch">Switch room</button>
       <p class="host-live"><span class="dot" aria-hidden="true"></span>Updates every few seconds</p>
     </div>
     <div class="host-chips" id="host-chips"></div>
@@ -224,6 +233,7 @@ body.host-mode .logo{margin-bottom:12px}
       <section class="col"><h3>Questions for the Q&amp;A</h3><div id="host-q"></div></section>
       <section class="col"><h3>Offers and meetups</h3><div id="host-o"></div></section>
       <section class="col"><h3>Comments</h3><div id="host-c"></div></section>
+    </div>
     </div>
   </section>
 </main>
@@ -437,11 +447,12 @@ async function copyText(t, okMsg){
 }
 
 function showTab(which){
-  const give = which === "give";
-  $("tab-give").setAttribute("aria-selected", String(give));
-  $("tab-read").setAttribute("aria-selected", String(!give));
-  $("view-give").hidden = !give; $("view-read").hidden = give;
-  if (give) renderGive(); else renderRead();
+  ["give","read","host"].forEach(t => { $("tab-" + t).setAttribute("aria-selected", String(t === which)); $("view-" + t).hidden = t !== which; });
+  document.body.classList.toggle("host-mode", which === "host");
+  if (which === "give") renderGive(); else if (which === "read") renderRead(); else renderHostView();
+  const want = which === "host" && state.host ? "#host-" + state.host : "";
+  if (/^#host-/.test(location.hash) && !want) history.replaceState(null, "", location.pathname + location.search);
+  else if (want && location.hash !== want) history.replaceState(null, "", want);
 }
 $("mainroom").onclick = () => { state.room = "main"; state.net = "main"; renderGive(); $("form").scrollIntoView({behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block:"start"}); };
 const AI_SCOPES = [["room-1","Room 1"],["room-2","Room 2"],["room-3","Room 3"],["room-4","Room 4"],["main","Main Room"],["all","Whole retreat"]];
@@ -461,6 +472,7 @@ $("ai-go").onclick = async () => {
 };
 $("tab-give").onclick = () => showTab("give");
 $("tab-read").onclick = () => showTab("read");
+$("tab-host").onclick = () => showTab("host");
 
 // Storage: the shared Claude database when this runs as an Artifact, or the site's own /api/feedback when hosted on the web (Vercel).
 const store = {
@@ -471,7 +483,7 @@ const store = {
       const pull = async () => { try { const r = await fetch("/api/feedback", {cache:"no-store"}); if (r.ok) onData(await r.json()); } catch {} };
       await pull();
       let tick = 0;
-      setInterval(() => { tick++; const busy = state.host || $("view-give").hidden; if (busy || tick % 4 === 0) pull(); }, state.host ? 8000 : 15000);
+      setInterval(() => { tick++; const every = !$("view-host").hidden ? 1 : !$("view-read").hidden ? 2 : 8; if (tick % every === 0) pull(); }, 8000);
       return true;
     }
     this.mode = "artifact";
@@ -490,7 +502,7 @@ const store = {
     await db.collection("feedback").add(rec);
   }
 };
-function refresh(){ if (state.host) renderHost(); else if (!$("view-give").hidden) renderNets(); else renderRead(); }
+function refresh(){ if (!$("view-host").hidden) renderHostView(); else if (!$("view-give").hidden) renderNets(); else renderRead(); }
 
 // Facilitator screen: …#host-2 shows one room's presenters and their notes as they arrive.
 function hostKey(){ return "host-room-" + state.host; }
@@ -506,7 +518,7 @@ function renderHost(){
   const room = ROOMS[state.host - 1], nets = room.nets;
   const i = Math.min(hostIndex(), nets.length - 1);
   const [, id, name, nd, nem] = nets[i];
-  $("host-room").textContent = "Facilitator screen · Room " + room.n + " · " + room.facil;
+  $("host-room").textContent = "Hosting Room " + room.n + " · " + room.facil;
   const chips = $("host-chips"); chips.replaceChildren();
   nets.forEach(([, nid], j) => chips.append(el("button", {type:"button", "aria-current": String(j === i), title: NETS[nid].name, onclick(){ setHostIndex(j); }}, "P" + (j + 1), el("span", {class:"c"}, String(countFor(nid))))));
   $("host-n").textContent = "Presenter " + (i + 1) + " of " + nets.length;
@@ -523,12 +535,14 @@ function renderHost(){
   const counts = $("host-counts"); counts.replaceChildren();
   KINDS.forEach(([k, label]) => { const n = by([k]).length; counts.append(el("span", {class:"pill k-" + k}, icon(k), label + " " + n)); });
 }
-function showHost(n){
-  state.host = n;
-  document.body.classList.add("host-mode");
-  $("view-give").hidden = true; $("view-read").hidden = true; $("view-host").hidden = false;
-  renderHost();
+function renderHostView(){
+  $("host-pick").hidden = !!state.host; $("host-screen").hidden = !state.host;
+  if (state.host) { renderHost(); return; }
+  const box = $("host-rooms"); box.replaceChildren();
+  ROOMS.forEach(r => box.append(el("button", {type:"button", onclick(){ showHost(r.n); }}, "Room " + r.n, el("span", {}, "Host: " + r.facil))));
 }
+function showHost(n){ state.host = n; showTab("host"); }
+$("host-switch").onclick = () => { state.host = null; showTab("host"); };
 $("host-prev").onclick = () => setHostIndex(Math.max(0, hostIndex() - 1));
 $("host-next").onclick = () => setHostIndex(hostIndex() + 1);
 window.addEventListener("hashchange", () => { const mh = /^#host-([1-4])$/.exec(location.hash); if (mh) showHost(Number(mh[1])); });
